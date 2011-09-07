@@ -80,7 +80,7 @@ sub get_provider_names {
 
 sub add_route { 
 	my ($self,$path,$config) = @_;
-	warn 'OAuth route: ' . $path . ' ====> ' . $config->{provider};
+	# warn 'OAuth route: ' . $path . ' ====> ' . $config->{provider};
 	$routes{ $path } = $config;
 }
 
@@ -174,6 +174,10 @@ sub request_token_v1 {
     }
 }
 
+
+
+
+
 sub access_token {
 	my ($self,$env,$provider) = @_;
 	my $config = $self->providers->{ $provider };
@@ -200,20 +204,24 @@ sub access_token_v2 {
 		scope         => $config->{scope},
 	);
 
-# 	my $session = Plack::Session->new( $env );
-# 	$session->set( );
-
     my $ua = LWP::UserAgent->new;
 	my $ua_response = $ua->get( $uri );
-	my $text = $ua_response->content;
+	my $qq = URI::Query->new( $ua_response->content );
+	my %params = $qq->hash;
+	my $oauth_data = { 
+		version      => $config->{version},  # oauth version
+		provider     => $provider,
+		access_token => $params{access_token},
+		expires      => $params{expires},
+		code         => $code
+	};
 
-	my $qq = URI::Query->new( $text );
-	my %extra_params = $qq->hash;
-	return $self->_response( YAML::Dump { 
-			content => $text ,
-			params => $req->parameters->as_hashref,
-			extra_params => \%extra_params
-	});
+	my $res;
+	$res = $self->signin( $env, $oauth_data ) if $self->signin;
+	return $res if $res;
+
+	# for testing
+	return $self->_response( YAML::Dump $oauth_data );
 }
 
 sub access_token_v1 {
@@ -253,16 +261,18 @@ sub access_token_v1 {
 
     $response = Net::OAuth->response( 'access token' )->from_post_body( $ua_response->content );
 
-    my $user = +{
-        token => $response->token,
-        token_secret => $response->token_secret,
-        extra_params => $response->extra_params
+    my $oauth_data = +{
+		version             => $config->{version},
+		provider            => $provider,
+		access_token        => $response->token,
+		access_token_secret => $response->token_secret,
+		extra_params        => $response->extra_params
     };
+	my $res;
+	$res = $self->signin( $env, $oauth_data ) if $self->signin;
+	return $res if $res;
 
-	return $self->_response( YAML::Dump({ 
-		token => $response->token , 
-		extra_params => $response->extra_params }) 
-	);
+	return $self->_response( YAML::Dump( $oauth_data ) );
     # my $user_obj = $realm->find_user( $user, $c );
     # return $user_obj if ref $user_obj;
     # $c->log->debug( 'Verified OAuth identity failed' ) if $self->debug;
