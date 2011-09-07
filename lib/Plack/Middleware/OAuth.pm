@@ -326,6 +326,15 @@ sub register_env {
 1;
 __END__
 
+=head1 NAME
+
+Plack::Middleware::OAuth - 
+
+=head1 DESCRIPTION
+
+
+
+
 =head1 SYNOPSIS
 
 	enable 'OAuth', from_yaml => 'oauth.yml';
@@ -342,7 +351,6 @@ __END__
             {
                 client_id        => ...
                 client_secret           => ...
-
                 scope            => 'email,read_stream',
             },
 
@@ -350,11 +358,13 @@ __END__
 			{
                 client_id => ...
                 client_secret => ...
-
                 scope => 'user,public_repo'
             },
 
-			'custom_provider' => { version => 1,  .... }
+			'custom_provider' => { 
+				version => 1,
+				....
+			}
 
 				# oauth path
 				#   /oauth/custom_provider
@@ -382,7 +392,5 @@ L<http://code.google.com/apis/accounts/docs/OAuth2.html>
 Google OAuth Scope:
 
 L<http://code.google.com/apis/gdata/faq.html#AuthScopes>
-
-
 
 =cut
