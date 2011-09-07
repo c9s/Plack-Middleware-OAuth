@@ -251,7 +251,7 @@ sub access_token_v2 {
 	die unless $oauth_data;
 
 	my $res;
-	$res = $self->signin( $env, $oauth_data ) if $self->signin;
+	$res = $self->signin->( $env, $oauth_data ) if $self->signin;
 	return $res if $res;
 
 	# for testing
@@ -303,8 +303,10 @@ sub access_token_v1 {
 		extra_params        => $response->extra_params
     };
 	my $res;
-	$res = $self->signin( $env, $oauth_data ) if $self->signin;
+	$res = $self->signin->( $env, $oauth_data ) if $self->signin;
 	return $res if $res;
+	
+	# return $res if $res;
 
 	return $self->_response( YAML::Dump( $oauth_data ) );
     # my $user_obj = $realm->find_user( $user, $c );
