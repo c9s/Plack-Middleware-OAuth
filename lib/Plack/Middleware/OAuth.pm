@@ -14,17 +14,17 @@ use Net::OAuth;
 use HTTP::Request::Common;
 use DateTime;
 use YAML;
+use JSON;
 
 
 our $VERSION = '0.01';
+
+
+
+# routes
+#    path => { provider => ... , method => .... }
 our %routes;
 
-
-=head2 %routes
-
-	path => { provider => ... , method => .... }
-
-=cut
 
 sub prepare_app {
 	my $self = shift;
@@ -59,7 +59,7 @@ sub prepare_app {
 		}
 		elsif( $config->{version} == 2 ) {
 
-			for( qw(client_id secret authorize_url access_token_url) ) {
+			for( qw(client_id client_secret authorize_url access_token_url) ) {
 				die "Please setup $_ for $provider_name" unless $config->{$_};
 			}
 		}
@@ -126,17 +126,26 @@ sub request_token {
 	return $self->request_token_v2( $env, $provider , $config ) if $config->{version} == 2;
 }
 
+
+
+
+
+
 sub request_token_v2 {
 	my ($self,$env,$provider,$config) = @_;
 
 	# "https://www.facebook.com/dialog/oauth?client_id=YOUR_APP_ID&redirect_uri=YOUR_URL";
 	my $uri = URI->new( $config->{authorize_url} );
 	$uri->query_form( 
-		client_id    => $config->{client_id},
-		redirect_uri => ( $config->{redirect_uri} || $self->build_callback_uri( $provider, $env ) )
+		client_id     => $config->{client_id},
+		redirect_uri  => ( $config->{redirect_uri} || $self->build_callback_uri( $provider, $env ) ),
+		response_type => $config->{response_type} || 'code',
+		scope         => $config->{scope},
 	);
 	return $self->_redirect( $uri );
 }
+
+
 
 sub request_token_v1 { 
 	my ($self,$env,$provider,$config) = @_;
@@ -195,26 +204,51 @@ sub access_token_v2 {
 	# https://graph.facebook.com/oauth/access_token?
 	# 	client_id=YOUR_APP_ID&redirect_uri=YOUR_URL&
 	# 	client_secret=YOUR_APP_SECRET&code=THE_CODE_FROM_ABOVE
+	my $method = $config->{request_method} || 'GET';
+
 	my $uri = URI->new( $config->{access_token_url} );
-	$uri->query_form( 
+    my $ua = LWP::UserAgent->new;
+	my $ua_response;
+	my %args = (
 		client_id     => $config->{client_id},
-		client_secret => $config->{secret},
+		client_secret => $config->{client_secret},
 		redirect_uri  => $config->{redirect_uri} || $self->build_callback_uri( $provider , $env ),
 		code          => $code,
 		scope         => $config->{scope},
+		grant_type    => $config->{grant_type},
 	);
+	if( $method eq 'GET' ) {
+		$uri->query_form( %args );
+		$ua_response = $ua->get( $uri );
+	} 
+	elsif( $method eq 'POST' ) {
+		$ua_response = $ua->post( $uri , \%args );
+	}
 
-    my $ua = LWP::UserAgent->new;
-	my $ua_response = $ua->get( $uri );
-	my $qq = URI::Query->new( $ua_response->content );
-	my %params = $qq->hash;
-	my $oauth_data = { 
-		version      => $config->{version},  # oauth version
-		provider     => $provider,
-		access_token => $params{access_token},
-		expires      => $params{expires},
-		code         => $code
-	};
+	my $response_content = $ua_response->content;
+	my $content_type = $ua_response->header('Content-Type');
+	my $oauth_data;
+
+	if( $content_type =~ m{json} ) {
+		my $params = decode_json( $response_content );
+		$oauth_data = { 
+			version      => $config->{version},  # oauth version
+			provider     => $provider,
+			params       => $params,
+			code         => $code
+		};
+	} else {
+		my $qq = URI::Query->new( $ua_response->content );
+		my %params = $qq->hash;
+		$oauth_data = { 
+			version      => $config->{version},  # oauth version
+			provider     => $provider,
+			params       => \%params,
+			code         => $code
+		};
+	}
+
+	die unless $oauth_data;
 
 	my $res;
 	$res = $self->signin( $env, $oauth_data ) if $self->signin;
@@ -307,7 +341,7 @@ __END__
             'Facebook' =>   # captical case implies Plack::Middleware::OAuth::Facebook
             {
                 client_id        => ...
-                secret           => ...
+                client_secret           => ...
 
                 scope            => 'email,read_stream',
             },
@@ -315,7 +349,7 @@ __END__
             'Github' => 
 			{
                 client_id => ...
-                secret => ...
+                client_secret => ...
 
                 scope => 'user,public_repo'
             },
@@ -340,5 +374,15 @@ L<http://cpanrating.org/oauth/callback/github>
 Twitter OAuth
 
 L<https://dev.twitter.com/apps/1225208/show>
+
+Google OAuth
+
+L<http://code.google.com/apis/accounts/docs/OAuth2.html>
+
+Google OAuth Scope:
+
+L<http://code.google.com/apis/gdata/faq.html#AuthScopes>
+
+
 
 =cut
