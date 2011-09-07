@@ -375,6 +375,14 @@ The callback/redirect URL is set to {SCHEMA}://{HTTP_HOST}/{prefix}/{provider}/c
 
 =head1 Reference
 
+OAuth Workflow
+
+L<http://hueniverse.com/oauth/guide/workflow/>
+
+OAuth 2.0 Protocal Draft
+
+L<http://tools.ietf.org/html/draft-ietf-oauth-v2>
+
 Github OAuth 
 
 L<https://github.com/account/applications/2739>
