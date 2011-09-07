@@ -379,11 +379,26 @@ Github OAuth
 
 L<https://github.com/account/applications/2739>
 
-L<http://cpanrating.org/oauth/callback/github>
+Github - Create A New Client
+
+L<https://github.com/account/applications>
 
 Twitter OAuth
 
 L<https://dev.twitter.com/apps/1225208/show>
+
+Twitter - Create A New App
+
+L<https://dev.twitter.com/apps>
+
+
+Facebook OAuth
+
+L<http://developers.facebook.com/docs/authentication/>
+
+Facebook - Create A New App
+
+L<https://developers.facebook.com/apps>
 
 Google OAuth
 
@@ -392,5 +407,7 @@ L<http://code.google.com/apis/accounts/docs/OAuth2.html>
 Google OAuth Scope:
 
 L<http://code.google.com/apis/gdata/faq.html#AuthScopes>
+
+
 
 =cut
