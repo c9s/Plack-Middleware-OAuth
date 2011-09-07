@@ -1,6 +1,14 @@
-## %routes
+# NAME
 
-	path => { provider => ... , method => .... }
+Plack::Middleware::OAuth - 
+
+# DESCRIPTION
+
+
+
+
+
+
 
 # SYNOPSIS
 
@@ -17,20 +25,21 @@
             'Facebook' =>   # captical case implies Plack::Middleware::OAuth::Facebook
             {
                 client_id        => ...
-                secret           => ...
-
+                client_secret           => ...
                 scope            => 'email,read_stream',
             },
 
             'Github' => 
 			{
                 client_id => ...
-                secret => ...
-
+                client_secret => ...
                 scope => 'user,public_repo'
             },
 
-			'custom_provider' => { version => 1,  .... }
+			'custom_provider' => { 
+				version => 1,
+				....
+			}
 
 				# oauth path
 				#   /oauth/custom_provider
@@ -45,8 +54,35 @@ Github OAuth
 
 [https://github.com/account/applications/2739](https://github.com/account/applications/2739)
 
-[http://cpanrating.org/oauth/callback/github](http://cpanrating.org/oauth/callback/github)
+Github - Create A New Client
+
+[https://github.com/account/applications](https://github.com/account/applications)
 
 Twitter OAuth
 
 [https://dev.twitter.com/apps/1225208/show](https://dev.twitter.com/apps/1225208/show)
+
+Twitter - Create A New App
+
+[https://dev.twitter.com/apps](https://dev.twitter.com/apps)
+
+
+
+Facebook OAuth
+
+[http://developers.facebook.com/docs/authentication/](http://developers.facebook.com/docs/authentication/)
+
+Facebook - Create A New App
+
+[https://developers.facebook.com/apps](https://developers.facebook.com/apps)
+
+Google OAuth
+
+[http://code.google.com/apis/accounts/docs/OAuth2.html](http://code.google.com/apis/accounts/docs/OAuth2.html)
+
+Google OAuth Scope:
+
+[http://code.google.com/apis/gdata/faq.html#AuthScopes](http://code.google.com/apis/gdata/faq.html#AuthScopes)
+
+
+
