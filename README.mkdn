@@ -12,39 +12,47 @@ Plack::Middleware::OAuth -
 
 # SYNOPSIS
 
-	enable 'OAuth', from_yaml => 'oauth.yml';
 
-	enable 'OAuth', prefix => '/_oauth',
-        providers => {
-            'Twitter' =>     # capital case implies Plack::Middleware::OAuth::Twitter
-            {
-                consumer_key      => ...
-                consumer_secret   => ...
-            },
 
-            'Facebook' =>   # captical case implies Plack::Middleware::OAuth::Facebook
-            {
-                client_id        => ...
-                client_secret           => ...
-                scope            => 'email,read_stream',
-            },
+	use Plack::Builder;
 
-            'Github' => 
-			{
-                client_id => ...
-                client_secret => ...
-                scope => 'user,public_repo'
-            },
+	builder {
+	
 
-			'custom_provider' => { 
-				version => 1,
-				....
-			}
+		enable 'OAuth', prefix => '/_oauth',
+			providers => {
+				'Twitter' =>     # capital case implies Plack::Middleware::OAuth::Twitter
+				{
+					consumer_key      => ...
+					consumer_secret   => ...
+				},
 
-				# oauth path
-				#   /oauth/custom_provider
-				#   /oauth/custom_provider/callback
-		};
+				'Facebook' =>   # captical case implies Plack::Middleware::OAuth::Facebook
+				{
+					client_id        => ...
+					client_secret           => ...
+					scope            => 'email,read_stream',
+				},
+
+				'Github' => 
+				{
+					client_id => ...
+					client_secret => ...
+					scope => 'user,public_repo'
+				},
+
+				'custom_provider' => { 
+					version => 1,
+					....
+				}
+
+					# oauth path
+					#   /oauth/custom_provider
+					#   /oauth/custom_provider/callback
+			};
+
+		$app;
+	};
 
 The callback/redirect URL is set to {SCHEMA}://{HTTP_HOST}/{prefix}/{provider}/callback by default.
 
