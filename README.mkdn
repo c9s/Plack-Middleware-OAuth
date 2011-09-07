@@ -1,0 +1,52 @@
+## %routes
+
+	path => { provider => ... , method => .... }
+
+# SYNOPSIS
+
+	enable 'OAuth', from_yaml => 'oauth.yml';
+
+	enable 'OAuth', prefix => '/_oauth',
+        providers => {
+            'Twitter' =>     # capital case implies Plack::Middleware::OAuth::Twitter
+            {
+                consumer_key      => ...
+                consumer_secret   => ...
+            },
+
+            'Facebook' =>   # captical case implies Plack::Middleware::OAuth::Facebook
+            {
+                client_id        => ...
+                secret           => ...
+
+                scope            => 'email,read_stream',
+            },
+
+            'Github' => 
+			{
+                client_id => ...
+                secret => ...
+
+                scope => 'user,public_repo'
+            },
+
+			'custom_provider' => { version => 1,  .... }
+
+				# oauth path
+				#   /oauth/custom_provider
+				#   /oauth/custom_provider/callback
+		};
+
+The callback/redirect URL is set to {SCHEMA}://{HTTP_HOST}/{prefix}/{provider}/callback by default.
+
+# Reference
+
+Github OAuth 
+
+[https://github.com/account/applications/2739](https://github.com/account/applications/2739)
+
+[http://cpanrating.org/oauth/callback/github](http://cpanrating.org/oauth/callback/github)
+
+Twitter OAuth
+
+[https://dev.twitter.com/apps/1225208/show](https://dev.twitter.com/apps/1225208/show)
