@@ -277,8 +277,8 @@ sub access_token_v2 {
     }
 
 	unless( $oauth_data ) {
-        return $this->on_error->( $self, $env, $provider, $config ) if $this->on_error;
-        return $this->_response( 'OAuth failed.' );
+        return $self->on_error->( $self, $env, $provider, $config ) if $self->on_error;
+        return $self->_response( 'OAuth failed.' );
     }
 
 
@@ -325,8 +325,8 @@ sub access_token_v1 {
     my $ua_response = $ua->request( GET $request->to_url );
 
     unless($ua_response->is_success) {
-        return $this->on_error->( $self, $env, $provider, $config ) if $this->on_error;
-        return $this->_response( $ua_response->status_line . ' ' . $ua_response->content );
+        return $self->on_error->( $self, $env, $provider, $config ) if $self->on_error;
+        return $self->_response( $ua_response->status_line . ' ' . $ua_response->content );
     }
 
 
