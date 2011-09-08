@@ -8,8 +8,19 @@ use inc::Module::Install;
 all_from       'lib/Plack/Middleware/OAuth.pm';
 readme_markdown_from 'lib/Plack/Middleware/OAuth.pm';
 
-# Specific dependencies
-requires       'File::Spec'  => '0.80';
+requires       
+    'File::Spec'  => 0,
+    'DateTime' => 0,
+    'Digest::MD5' => 0,
+    'URI' => 0,
+    'URI::Query' => 0,
+    'LWP::UserAgent' => 0,
+    'Net::OAuth' => 0,
+    'HTTP::Request::Common' => 0,
+    'DateTime' => 0,
+    'YAML' => 0,
+    'JSON' => 0;
+
 # test_requires  'Test::More'  => '0.42';
 # recommends     'Text::CSV_XS'=> '0.50';
 # no_index       'directory'   => 'demos';
