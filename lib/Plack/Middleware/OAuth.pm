@@ -336,8 +336,15 @@ Plack::Middleware::OAuth -
 
 =head1 DESCRIPTION
 
+L<Plack::Middleware::OAuth> supports OAuth1 and OAuth2, can have builtin configs for providers like Twitter, Github, Google, Facebook.
+The only need to mount you OAuth service if to setup your C<consumer_key>, C<consumer_secret> (OAuth1) or C<client_id>, C<client_secret>, C<scope> (OAuth2).
 
+L<Plack::Middleware::OAuth> generates authorize url (mount_path/provider_id) and auththorize callback url (mount_path/privder_id/callback). 
+If the authorize path matches, then user will be redirected to OAuth provider.
 
+For example, if you mount L<Plack::Middleware::OAuth> on L</oauth>, then you can access L<http://youdomain.com/oauth/twitter> ,
+And then L<Plack::Middleware::OAuth> will redirect you to Twitter, then Twitter will redirect you to 
+L<http://youdomain.com/oauth/twitter/callback>.
 
 =head1 SYNOPSIS
 
@@ -345,39 +352,47 @@ Plack::Middleware::OAuth -
 	use Plack::Builder;
 
 	builder {
-	
-		enable 'OAuth', prefix => '/_oauth',
-			providers => {
-				'Twitter' =>     # capital case implies Plack::Middleware::OAuth::Twitter
-				{
-					consumer_key      => ...
-					consumer_secret   => ...
-				},
 
-				'Facebook' =>   # captical case implies Plack::Middleware::OAuth::Facebook
-				{
-					client_id        => ...
-					client_secret           => ...
-					scope            => 'email,read_stream',
-				},
+        mount '/oauth' => builder {
+            enable 'OAuth', 
+                providers => {
 
-				'Github' => 
-				{
-					client_id => ...
-					client_secret => ...
-					scope => 'user,public_repo'
-				},
+                    # capital case implies Plack::Middleware::OAuth::Twitter
+                    # authorize path: /oauth/twitter
+                    # authorize callback path: /oauth/twitter/callback
 
-				'custom_provider' => { 
-					version => 1,
-					....
-				}
+                    'Twitter' =>
+                    {
+                        consumer_key      => ...
+                        consumer_secret   => ...
+                    },
 
-					# oauth path
-					#   /oauth/custom_provider
-					#   /oauth/custom_provider/callback
+                    # captical case implies Plack::Middleware::OAuth::Facebook
+                    # authorize path: /oauth/facebook
+                    # authorize callback path: /oauth/facebook/callback
+
+                    'Facebook' =>
+                    {
+                        client_id        => ...
+                        client_secret           => ...
+                        scope            => 'email,read_stream',
+                    },
+
+                    'Github' => 
+                    {
+                        client_id => ...
+                        client_secret => ...
+                        scope => 'user,public_repo'
+                    },
+
+                    # authorize path: /oauth/custom_provider
+                    # authorize callback path: /oauth/custom_provider/callback
+                    'custom_provider' => { 
+                        version => 1,
+                        ....
+                    }
 			};
-
+        };
 		$app;
 	};
 
