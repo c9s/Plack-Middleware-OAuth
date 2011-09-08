@@ -1,2 +1,4 @@
 .shipit
 inc/
+tmp
+eg/app.psgi.dev
