@@ -386,10 +386,14 @@ For more details, please check the example psgi in F<eg/> directory.
 
         mount '/oauth' => builder {
             enable 'OAuth', 
+
                 on_signin => sub  { 
                     my ($self,$env,$oauth_data) = @_;
                     return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
                 },
+
+                on_error => sub {  ...  },
+
                 providers => {
 
                     # capital case implies Plack::Middleware::OAuth::Twitter
