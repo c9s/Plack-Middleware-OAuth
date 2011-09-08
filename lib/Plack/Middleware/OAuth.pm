@@ -88,15 +88,9 @@ sub dispatch_oauth_call {
 sub call {
 	my ($self,$env) = @_;
 
-    my $ses = Plack::Session->new( $env );
-    use Data::Dumper; 
-    warn Dumper( $ses->keys );
-
 	my $res;
 	$res = $self->dispatch_oauth_call( $env );
 	return $res if $res;
-
-
 
 	$res = $self->app->( $env );
 	return $res;
