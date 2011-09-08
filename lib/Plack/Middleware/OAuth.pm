@@ -332,7 +332,7 @@ __END__
 
 =head1 NAME
 
-Plack::Middleware::OAuth - 
+Plack::Middleware::OAuth - Plack middleware for OAuth1, OAuth2 and builtin provider configs. 
 
 =head1 DESCRIPTION
 
@@ -345,6 +345,8 @@ If the authorize path matches, then user will be redirected to OAuth provider.
 For example, if you mount L<Plack::Middleware::OAuth> on L</oauth>, then you can access L<http://youdomain.com/oauth/twitter> ,
 And then L<Plack::Middleware::OAuth> will redirect you to Twitter, then Twitter will redirect you to 
 L<http://youdomain.com/oauth/twitter/callback>.
+
+For more details, please check the example psgi in eg/ directory.
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 # NAME
 
-Plack::Middleware::OAuth - 
+Plack::Middleware::OAuth - Plack middleware for OAuth1, OAuth2 and builtin provider configs. 
 
 # DESCRIPTION
 
@@ -13,6 +13,8 @@ If the authorize path matches, then user will be redirected to OAuth provider.
 For example, if you mount [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) on [oauth](#pod_oauth), then you can access [http://youdomain.com/oauth/twitter](http://youdomain.com/oauth/twitter) ,
 And then [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) will redirect you to Twitter, then Twitter will redirect you to 
 [http://youdomain.com/oauth/twitter/callback](http://youdomain.com/oauth/twitter/callback).
+
+For more details, please check the example psgi in eg/ directory.
 
 # SYNOPSIS
 
