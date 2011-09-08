@@ -4,7 +4,7 @@ use strict;
 use parent qw(Plack::Middleware);
 use DateTime;
 use Digest::MD5 qw(md5_hex);
-use Plack::Util::Accessor qw(providers signin debug);
+use Plack::Util::Accessor qw(providers on_signin on_error debug);
 use Plack::Session;
 use Plack::Response;
 use Plack::Request;
@@ -276,7 +276,10 @@ sub access_token_v2 {
         # return $self->request_token_v2( $env, $provider, $config);
     }
 
-	die unless $oauth_data;
+	unless( $oauth_data ) {
+        return $this->on_error->( $self, $env, $provider, $config ) if $this->on_error;
+        return $this->_response( 'OAuth failed.' );
+    }
 
 
     my $session = Plack::Session->new( $env );
@@ -285,8 +288,8 @@ sub access_token_v2 {
 
 
 	my $res;
-	$res = $self->signin->( $self, $env, $oauth_data ) if $self->signin;
-	# return $res if $res;
+	$res = $self->on_signin->( $self, $env, $oauth_data ) if $self->on_signin;
+	return $res if $res;
 
 	# for testing
 	return $self->_response( YAML::Dump $oauth_data );
@@ -321,11 +324,11 @@ sub access_token_v1 {
     my $ua = LWP::UserAgent->new;
     my $ua_response = $ua->request( GET $request->to_url );
 
-	# XXX: use Plack::Response...
-    die $ua_response->content unless $ua_response->is_success;
+    unless($ua_response->is_success) {
+        return $this->on_error->( $self, $env, $provider, $config ) if $this->on_error;
+        return $this->_response( $ua_response->status_line . ' ' . $ua_response->content );
+    }
 
-#     Catalyst::Exception->throw( $ua_response->status_line.' '.$ua_response->content )
-#         unless $ua_response->is_success;
 
     $response = Net::OAuth->response( 'access token' )->from_post_body( $ua_response->content );
 
@@ -344,13 +347,11 @@ sub access_token_v1 {
     $session->set( 'oauth.' . lc($provider)  . '.access_token_secret' , $oauth_data->{params}->{access_token_secret} );
 
 	my $res;
-	$res = $self->signin->( $self, $env, $oauth_data ) if $self->signin;
+	$res = $self->on_signin->( $self, $env, $oauth_data ) if $self->on_signin;
 	return $res if $res;
 
+
 	return $self->_response( YAML::Dump( $oauth_data ) );
-    # my $user_obj = $realm->find_user( $user, $c );
-    # return $user_obj if ref $user_obj;
-    # $c->log->debug( 'Verified OAuth identity failed' ) if $self->debug;
 }
 
 sub build_callback_uri {
@@ -391,7 +392,7 @@ For more details, please check the example psgi in F<eg/> directory.
 
         mount '/oauth' => builder {
             enable 'OAuth', 
-                signin => sub  { 
+                on_signin => sub  { 
                     my ($self,$env,$oauth_data) = @_;
                     return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
                 },
@@ -456,16 +457,25 @@ You can get OAuth1 or OAuth2 access token from Session,
     $session->get( 'oauth2.facebook.access_token' );
     $session->get( 'oauth2.custom_provider' );
 
-=head1 Handle Signin 
+=head1 Specify Signin Callback
 
     enable 'OAuth', 
         providers => { .... },
-        signin => sub  { 
+        on_signin => sub  { 
             my ($self,$env,$oauth_data) = @_;
             return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
         };
 
-Without specify C<signin>, OAuth middleware will use YAML to dump the response data to page.
+Without specify C<on_signin>, OAuth middleware will use YAML to dump the response data to page.
+
+=head1 Handle Error
+
+    enable 'OAuth', 
+        providers => { .... },
+        on_error => sub {
+            my ($self,$env,$provider,$config) = @_;
+
+        };
 
 =head1 Reference
 
