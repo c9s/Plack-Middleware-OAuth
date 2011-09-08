@@ -343,7 +343,6 @@ sub access_token_v1 {
     $session->set( 'oauth.' . lc($provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
     $session->set( 'oauth.' . lc($provider)  . '.access_token_secret' , $oauth_data->{params}->{access_token_secret} );
 
-
 	my $res;
 	$res = $self->signin->( $self, $env, $oauth_data ) if $self->signin;
 	return $res if $res;

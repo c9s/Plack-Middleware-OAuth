@@ -10,8 +10,8 @@ The only need to mount you OAuth service if to setup your `consumer_key`, `consu
 [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) generates authorize url (mount_path/provider_id) and auththorize callback url (mount_path/privder_id/callback). 
 If the authorize path matches, then user will be redirected to OAuth provider.
 
-For example, if you mount [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) on [oauth](#pod_oauth), then you can access [http://youdomain.com/oauth/twitter](http://youdomain.com/oauth/twitter) ,
-And then [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) will redirect you to Twitter, then Twitter will redirect you to 
+For example, if you mount [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) on [oauth](#pod_oauth), then you can access [http://youdomain.com/oauth/twitter](http://youdomain.com/oauth/twitter) to authorize,
+[Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) will redirect you to Twitter, after authorized, then Twitter will redirect you to your callback url
 [http://youdomain.com/oauth/twitter/callback](http://youdomain.com/oauth/twitter/callback).
 
 For more details, please check the example psgi in eg/ directory.
@@ -75,49 +75,79 @@ For more details, please check the example psgi in eg/ directory.
 
 The callback/redirect URL is set to {SCHEMA}://{HTTP_HOST}/{prefix}/{provider}/callback by default.
 
+
+
+# Sessions
+
+You can get OAuth1 or OAuth2 access token from Session,
+
+    my $session = Plack::Session->new( $env );
+    $session->get( 'oauth.twitter.access_token' );
+    $session->get( 'oauth.twitter.access_token_secret' );
+
+    $session->get( 'oauth2.facebook.access_token' );
+    $session->get( 'oauth2.custom_provider' );
+
 # Reference
 
-OAuth Workflow
+- *
 
+OAuth Workflow 
 [http://hueniverse.com/oauth/guide/workflow/](http://hueniverse.com/oauth/guide/workflow/)
 
-OAuth 2.0 Protocal Draft
+- *
 
+OAuth 2.0 Protocal Draft
 [http://tools.ietf.org/html/draft-ietf-oauth-v2](http://tools.ietf.org/html/draft-ietf-oauth-v2)
 
-Github OAuth 
+- * 
 
+Github OAuth 
 [https://github.com/account/applications/2739](https://github.com/account/applications/2739)
 
-Github - Create A New Client
+- *
 
+Github - Create A New Client
 [https://github.com/account/applications](https://github.com/account/applications)
 
-Twitter OAuth
+- *
 
+Twitter OAuth
 [https://dev.twitter.com/apps/1225208/show](https://dev.twitter.com/apps/1225208/show)
 
-Twitter - Create A New App
+- *
 
+Twitter - Create A New App
 [https://dev.twitter.com/apps](https://dev.twitter.com/apps)
 
 
 
-Facebook OAuth
+- *
 
+Facebook OAuth
 [http://developers.facebook.com/docs/authentication/](http://developers.facebook.com/docs/authentication/)
 
-Facebook - Create A New App
+- *
 
+Facebook - Create A New App
 [https://developers.facebook.com/apps](https://developers.facebook.com/apps)
 
-Google OAuth
+- *
 
+Facebook - Permissions
+[http://developers.facebook.com/docs/reference/api/permissions/](http://developers.facebook.com/docs/reference/api/permissions/)
+
+- *
+
+Facebook - How to handle expired access_token
+[https://developers.facebook.com/blog/post/500/](https://developers.facebook.com/blog/post/500/)
+
+- *
+
+Google OAuth
 [http://code.google.com/apis/accounts/docs/OAuth2.html](http://code.google.com/apis/accounts/docs/OAuth2.html)
 
+- *
+
 Google OAuth Scope:
-
 [http://code.google.com/apis/gdata/faq.html#AuthScopes](http://code.google.com/apis/gdata/faq.html#AuthScopes)
-
-
-
