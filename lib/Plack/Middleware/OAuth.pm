@@ -367,7 +367,7 @@ Plack::Middleware::OAuth - Plack middleware for OAuth1, OAuth2 and builtin provi
 =head1 DESCRIPTION
 
 L<Plack::Middleware::OAuth> supports OAuth1 and OAuth2, and provides builtin configs for providers like Twitter, Github, Google, Facebook.
-The only one thing you need to mount you OAuth service is to setup your C<consumer_key>, C<consumer_secret> (OAuth1) or C<client_id>, C<client_secret>, C<scope> (OAuth2).
+The only one thing you need to mount your OAuth service is to setup your C<consumer_key>, C<consumer_secret> (OAuth1) or C<client_id>, C<client_secret>, C<scope> (OAuth2).
 
 L<Plack::Middleware::OAuth> generates authorize url (mount_path/provider_id) and auththorize callback url (mount_path/provider_id/callback). 
 If the authorize path matches, then user will be redirected to OAuth provider to authorize your application.
