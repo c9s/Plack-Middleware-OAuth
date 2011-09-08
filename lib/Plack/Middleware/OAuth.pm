@@ -362,11 +362,6 @@ sub build_callback_uri {
     return URI->new( $env->{'psgi.url_scheme'} . '://' . $env->{HTTP_HOST} . $env->{SCRIPT_NAME} . '/' . lc($provider) . '/callback' );
 }
 
-sub register_env {
-	my ($self,$params) = @_;
-	my $prefix = 'oauth.';
-}
-
 1;
 __END__
 
@@ -389,7 +384,6 @@ L<http://youdomain.com/oauth/twitter/callback>.
 For more details, please check the example psgi in F<eg/> directory.
 
 =head1 SYNOPSIS
-
 
 	use Plack::Builder;
 

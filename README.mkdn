@@ -10,11 +10,11 @@ The only need to mount you OAuth service if to setup your `consumer_key`, `consu
 [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) generates authorize url (mount_path/provider_id) and auththorize callback url (mount_path/privder_id/callback). 
 If the authorize path matches, then user will be redirected to OAuth provider.
 
-For example, if you mount [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) on [oauth](#pod_oauth), then you can access [http://youdomain.com/oauth/twitter](http://youdomain.com/oauth/twitter) to authorize,
+For example, if you mount [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) on `/oauth`, then you can access [http://youdomain.com/oauth/twitter](http://youdomain.com/oauth/twitter) to authorize,
 [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) will redirect you to Twitter, after authorized, then Twitter will redirect you to your callback url
 [http://youdomain.com/oauth/twitter/callback](http://youdomain.com/oauth/twitter/callback).
 
-For more details, please check the example psgi in eg/ directory.
+For more details, please check the example psgi in `eg/` directory.
 
 # SYNOPSIS
 
