@@ -222,7 +222,10 @@ sub access_token_v2 {
 	my $content_type = $ua_response->header('Content-Type');
 	my $oauth_data;
 
-	if( $content_type =~ m{json} ) {
+    use Data::Dumper::Simple; 
+    warn Dumper( $content_type , $response_content );
+
+	if( $content_type =~ m{json} || $content_type =~ m{javascript} ) {
 		my $params = decode_json( $response_content );
 		$oauth_data = { 
 			version      => $config->{version},  # oauth version
@@ -242,6 +245,14 @@ sub access_token_v2 {
 	}
 
 	die unless $oauth_data;
+
+    my $session = Plack::Session->new( $env );
+    $session->set( 'oauth2.' . lc($provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
+    $session->set( 'oauth2.' . lc($provider)  . '.code'         , $oauth_data->{code} );
+    $session->set( 'oauth2.' . lc($provider)  . '.version'      , $oauth_data->{version} );
+
+
+
 
 	my $res;
 	$res = $self->signin->( $self, $env, $oauth_data ) if $self->signin;
@@ -297,6 +308,13 @@ sub access_token_v1 {
 			extra_params        => $response->extra_params
 		},
     };
+
+    my $session = Plack::Session->new( $env );
+    $session->set( 'oauth.' . lc($provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
+    $session->set( 'oauth.' . lc($provider)  . '.access_token_secret' , $oauth_data->{params}->{access_token_secret} );
+    $session->set( 'oauth.' . lc($provider)  . '.version' , $oauth_data->{version} );
+
+
 	my $res;
 	$res = $self->signin->( $self, $env, $oauth_data ) if $self->signin;
 	use Data::Dumper; warn Dumper( $res );
@@ -342,8 +360,8 @@ The only need to mount you OAuth service if to setup your C<consumer_key>, C<con
 L<Plack::Middleware::OAuth> generates authorize url (mount_path/provider_id) and auththorize callback url (mount_path/privder_id/callback). 
 If the authorize path matches, then user will be redirected to OAuth provider.
 
-For example, if you mount L<Plack::Middleware::OAuth> on L</oauth>, then you can access L<http://youdomain.com/oauth/twitter> ,
-And then L<Plack::Middleware::OAuth> will redirect you to Twitter, then Twitter will redirect you to 
+For example, if you mount L<Plack::Middleware::OAuth> on L</oauth>, then you can access L<http://youdomain.com/oauth/twitter> to authorize,
+L<Plack::Middleware::OAuth> will redirect you to Twitter, after authorized, then Twitter will redirect you to your callback url
 L<http://youdomain.com/oauth/twitter/callback>.
 
 For more details, please check the example psgi in eg/ directory.
@@ -408,47 +426,59 @@ The callback/redirect URL is set to {SCHEMA}://{HTTP_HOST}/{prefix}/{provider}/c
 
 =head1 Reference
 
-OAuth Workflow
+=for 4
 
+=item *
+
+OAuth Workflow 
 L<http://hueniverse.com/oauth/guide/workflow/>
 
-OAuth 2.0 Protocal Draft
+=item *
 
+OAuth 2.0 Protocal Draft
 L<http://tools.ietf.org/html/draft-ietf-oauth-v2>
 
-Github OAuth 
+=item * 
 
+Github OAuth 
 L<https://github.com/account/applications/2739>
 
-Github - Create A New Client
+=item *
 
+Github - Create A New Client
 L<https://github.com/account/applications>
 
-Twitter OAuth
+=item *
 
+Twitter OAuth
 L<https://dev.twitter.com/apps/1225208/show>
 
-Twitter - Create A New App
+=item *
 
+Twitter - Create A New App
 L<https://dev.twitter.com/apps>
 
 
-Facebook OAuth
+=item *
 
+Facebook OAuth
 L<http://developers.facebook.com/docs/authentication/>
 
-Facebook - Create A New App
+=item *
 
+Facebook - Create A New App
 L<https://developers.facebook.com/apps>
 
-Google OAuth
+=item *
 
+Google OAuth
 L<http://code.google.com/apis/accounts/docs/OAuth2.html>
 
-Google OAuth Scope:
+=item *
 
+Google OAuth Scope:
 L<http://code.google.com/apis/gdata/faq.html#AuthScopes>
 
-
+=back
 
 =cut
