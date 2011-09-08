@@ -382,11 +382,11 @@ The only need to mount you OAuth service if to setup your C<consumer_key>, C<con
 L<Plack::Middleware::OAuth> generates authorize url (mount_path/provider_id) and auththorize callback url (mount_path/privder_id/callback). 
 If the authorize path matches, then user will be redirected to OAuth provider.
 
-For example, if you mount L<Plack::Middleware::OAuth> on L</oauth>, then you can access L<http://youdomain.com/oauth/twitter> to authorize,
+For example, if you mount L<Plack::Middleware::OAuth> on F</oauth>, then you can access L<http://youdomain.com/oauth/twitter> to authorize,
 L<Plack::Middleware::OAuth> will redirect you to Twitter, after authorized, then Twitter will redirect you to your callback url
 L<http://youdomain.com/oauth/twitter/callback>.
 
-For more details, please check the example psgi in eg/ directory.
+For more details, please check the example psgi in F<eg/> directory.
 
 =head1 SYNOPSIS
 
