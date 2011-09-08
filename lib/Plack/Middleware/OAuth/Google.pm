@@ -2,7 +2,6 @@ package Plack::Middleware::OAuth::Google;
 use warnings;
 use strict;
 
-
 sub config { +{
 	version   => 2,
 	authorize_url    => 'https://accounts.google.com/o/oauth2/auth',
@@ -11,6 +10,5 @@ sub config { +{
 	grant_type       => 'authorization_code',
 	request_method   => 'POST',
 } }
-
 
 1;
