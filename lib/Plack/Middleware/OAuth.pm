@@ -391,6 +391,10 @@ For more details, please check the example psgi in F<eg/> directory.
 
         mount '/oauth' => builder {
             enable 'OAuth', 
+                signin => sub  { 
+                    my ($self,$env,$oauth_data) = @_;
+                    return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
+                },
                 providers => {
 
                     # capital case implies Plack::Middleware::OAuth::Twitter
@@ -460,6 +464,8 @@ You can get OAuth1 or OAuth2 access token from Session,
             my ($self,$env,$oauth_data) = @_;
             return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
         };
+
+Without specify C<signin>, OAuth middleware will use YAML to dump the response data to page.
 
 =head1 Reference
 
