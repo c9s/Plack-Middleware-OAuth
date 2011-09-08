@@ -88,9 +88,15 @@ sub dispatch_oauth_call {
 sub call {
 	my ($self,$env) = @_;
 
+    my $ses = Plack::Session->new( $env );
+    use Data::Dumper; 
+    warn Dumper( $ses->keys );
+
 	my $res;
 	$res = $self->dispatch_oauth_call( $env );
 	return $res if $res;
+
+
 
 	$res = $self->app->( $env );
 	return $res;
@@ -276,7 +282,6 @@ sub access_token_v2 {
     my $session = Plack::Session->new( $env );
     $session->set( 'oauth2.' . lc($provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
     $session->set( 'oauth2.' . lc($provider)  . '.code'         , $oauth_data->{code} );
-    $session->set( 'oauth2.' . lc($provider)  . '.version'      , $oauth_data->{version} );
 
 
 	my $res;
@@ -337,7 +342,6 @@ sub access_token_v1 {
     my $session = Plack::Session->new( $env );
     $session->set( 'oauth.' . lc($provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
     $session->set( 'oauth.' . lc($provider)  . '.access_token_secret' , $oauth_data->{params}->{access_token_secret} );
-    $session->set( 'oauth.' . lc($provider)  . '.version' , $oauth_data->{version} );
 
 
 	my $res;
@@ -443,6 +447,18 @@ For more details, please check the example psgi in eg/ directory.
 
 The callback/redirect URL is set to {SCHEMA}://{HTTP_HOST}/{prefix}/{provider}/callback by default.
 
+
+=head1 Sessions
+
+You can get OAuth1 or OAuth2 access token from Session,
+
+    my $session = Plack::Session->new( $env );
+    $session->get( 'oauth.twitter.access_token' );
+    $session->get( 'oauth.twitter.access_token_secret' );
+
+    $session->get( 'oauth2.facebook.access_token' );
+    $session->get( 'oauth2.custom_provider' );
+
 =head1 Reference
 
 =for 4
@@ -492,6 +508,11 @@ L<https://developers.facebook.com/apps>
 
 Facebook - Permissions
 L<http://developers.facebook.com/docs/reference/api/permissions/>
+
+=item *
+
+Facebook - How to handle expired access_token
+L<https://developers.facebook.com/blog/post/500/>
 
 =item *
 
