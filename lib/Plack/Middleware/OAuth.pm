@@ -385,6 +385,12 @@ L<http://youdomain.com/oauth/twitter/callback>.
                         scope => 'user,public_repo'
                     },
 
+                    'Google' =>  { 
+                        client_id     => '',
+                        client_secret => '',
+                        scope         => 'https://www.google.com/m8/feeds/'
+                    },
+
                     # authorize path: /oauth/custom_provider
                     # authorize callback path: /oauth/custom_provider/callback
                     'custom_provider' => { 
