@@ -222,8 +222,8 @@ sub access_token_v2 {
 	my $content_type = $ua_response->header('Content-Type');
 	my $oauth_data;
 
-    use Data::Dumper::Simple; 
-    warn Dumper( $content_type , $response_content );
+    # use Data::Dumper::Simple; 
+    # warn Dumper( $content_type , $response_content );
 
 	if( $content_type =~ m{json} || $content_type =~ m{javascript} ) {
 		my $params = decode_json( $response_content );
@@ -317,7 +317,7 @@ sub access_token_v1 {
 
 	my $res;
 	$res = $self->signin->( $self, $env, $oauth_data ) if $self->signin;
-	use Data::Dumper; warn Dumper( $res );
+    # use Data::Dumper; warn Dumper( $res );
 	
 	
 	# return $res if $res;
