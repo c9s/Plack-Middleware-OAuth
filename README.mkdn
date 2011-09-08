@@ -18,14 +18,16 @@ For more details, please check the example psgi in `eg/` directory.
 
 # SYNOPSIS
 
-
-
 	use Plack::Builder;
 
 	builder {
 
         mount '/oauth' => builder {
             enable 'OAuth', 
+                signin => sub  { 
+                    my ($self,$env,$oauth_data) = @_;
+                    return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
+                },
                 providers => {
 
                     # capital case implies Plack::Middleware::OAuth::Twitter
@@ -87,6 +89,17 @@ You can get OAuth1 or OAuth2 access token from Session,
 
     $session->get( 'oauth2.facebook.access_token' );
     $session->get( 'oauth2.custom_provider' );
+
+# Handle Signin 
+
+    enable 'OAuth', 
+        providers => { .... },
+        signin => sub  { 
+            my ($self,$env,$oauth_data) = @_;
+            return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
+        };
+
+Without specify `signin`, OAuth middleware will use YAML to dump the response data to page.
 
 # Reference
 
