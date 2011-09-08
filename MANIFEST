@@ -1,0 +1,26 @@
+.shipit
+Changes
+eg/app.psgi
+ignore.txt
+inc/Module/Install.pm
+inc/Module/Install/Base.pm
+inc/Module/Install/Can.pm
+inc/Module/Install/Fetch.pm
+inc/Module/Install/Makefile.pm
+inc/Module/Install/Metadata.pm
+inc/Module/Install/ReadmeMarkdownFromPod.pm
+inc/Module/Install/Win32.pm
+inc/Module/Install/WriteAll.pm
+inc/Pod/Markdown.pm
+lib/Plack/Middleware/OAuth.pm
+lib/Plack/Middleware/OAuth/Facebook.pm
+lib/Plack/Middleware/OAuth/Github.pm
+lib/Plack/Middleware/OAuth/Google.pm
+lib/Plack/Middleware/OAuth/Twitter.pm
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+README
+README.mkdn
+t/00-load.t
+t/manifest.t
