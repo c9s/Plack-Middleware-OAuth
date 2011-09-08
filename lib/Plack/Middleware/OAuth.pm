@@ -73,7 +73,6 @@ sub get_provider_names {
 
 sub add_route { 
 	my ($self,$path,$config) = @_;
-	# warn 'OAuth route: ' . $path . ' ====> ' . $config->{provider};
 	$routes{ $path } = $config;
 }
 
@@ -128,6 +127,8 @@ sub request_token_v2 {
 	my ($self,$env,$provider,$config) = @_;
 
 	# "https://www.facebook.com/dialog/oauth?client_id=YOUR_APP_ID&redirect_uri=YOUR_URL";
+    $config->{redirect_uri} ||= $self->build_callback_uri( $provider, $env );
+
 	my $uri = URI->new( $config->{authorize_url} );
 	$uri->query_form( 
 		client_id     => $config->{client_id},
@@ -144,6 +145,9 @@ sub request_token_v1 {
 	my ($self,$env,$provider,$config) = @_;
     $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
     my $ua = LWP::UserAgent->new;
+
+    # save it , becase we have to built callback URI from ENV.PATH_FINO and ENV.SCRIPT_NAME
+    $config->{callback} ||= $self->build_callback_uri( $provider, $env );
     my $request = Net::OAuth->request("request token")->new( 
             %$config,
 
@@ -151,8 +155,6 @@ sub request_token_v1 {
 
 			timestamp => DateTime->now->epoch,
 			nonce => md5_hex(time),
-
-			callback => $self->build_callback_uri( $provider, $env )
 		);
     $request->sign;
     my $res = $ua->request(POST $request->to_url); # Post message to the Service Provider
@@ -180,6 +182,11 @@ sub request_token_v1 {
 
 
 
+
+# Access token methods ....
+
+
+
 sub access_token {
 	my ($self,$env,$provider) = @_;
 	my $config = $self->providers->{ $provider };
@@ -187,29 +194,27 @@ sub access_token {
 	return $self->access_token_v2( $env, $provider , $config ) if $config->{version} == 2;
 }
 
-sub access_token_v2 {
-	my ($self,$env,$provider,$config) = @_;
 
-	# http://YOUR_URL?code=A_CODE_GENERATED_BY_SERVER
-	my $req = Plack::Request->new($env);
-	my $code = $req->param('code');
-
-	# https://graph.facebook.com/oauth/access_token?
-	# 	client_id=YOUR_APP_ID&redirect_uri=YOUR_URL&
-	# 	client_secret=YOUR_APP_SECRET&code=THE_CODE_FROM_ABOVE
-	my $method = $config->{request_method} || 'GET';
-
-	my $uri = URI->new( $config->{access_token_url} );
-    my $ua = LWP::UserAgent->new;
-	my $ua_response;
+sub _oauth2_build_args {
+    my ($self,$env,$provider,$config,$code) = @_;
 	my %args = (
 		client_id     => $config->{client_id},
 		client_secret => $config->{client_secret},
 		redirect_uri  => $config->{redirect_uri} || $self->build_callback_uri( $provider , $env ),
-		code          => $code,
 		scope         => $config->{scope},
 		grant_type    => $config->{grant_type},
+		code          => $code,
 	);
+    return %args;
+}
+
+sub _oauth2_get_access_token {
+    my ($self,$config,$provider,$code,%args) = @_;
+	my $uri = URI->new( $config->{access_token_url} );
+    my $ua = LWP::UserAgent->new;
+	my $ua_response;
+
+	my $method = $config->{request_method} || 'GET';
 	if( $method eq 'GET' ) {
 		$uri->query_form( %args );
 		$ua_response = $ua->get( $uri );
@@ -218,12 +223,10 @@ sub access_token_v2 {
 		$ua_response = $ua->post( $uri , \%args );
 	}
 
+    # process response content...
 	my $response_content = $ua_response->content;
 	my $content_type = $ua_response->header('Content-Type');
 	my $oauth_data;
-
-    # use Data::Dumper::Simple; 
-    # warn Dumper( $content_type , $response_content );
 
 	if( $content_type =~ m{json} || $content_type =~ m{javascript} ) {
 		my $params = decode_json( $response_content );
@@ -243,15 +246,37 @@ sub access_token_v2 {
 			code         => $code
 		};
 	}
+    return $oauth_data;
+}
+
+
+
+sub access_token_v2 {
+	my ($self,$env,$provider,$config) = @_;
+
+	# http://YOUR_URL?code=A_CODE_GENERATED_BY_SERVER
+	my $req = Plack::Request->new($env);
+	my $code = $req->param('code');
+
+	# https://graph.facebook.com/oauth/access_token?
+	# 	  client_id=YOUR_APP_ID&redirect_uri=YOUR_URL&
+	# 	  client_secret=YOUR_APP_SECRET&code=THE_CODE_FROM_ABOVE
+
+	my %args = $self->_oauth2_build_args($env,$provider,$config,$code); 
+	my $oauth_data = $self->_oauth2_get_access_token( $config , $provider , $code , %args );
+
+    if( $oauth_data->{params}->{error} ) {  
+        # retry ? 
+        # return $self->request_token_v2( $env, $provider, $config);
+    }
 
 	die unless $oauth_data;
+
 
     my $session = Plack::Session->new( $env );
     $session->set( 'oauth2.' . lc($provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
     $session->set( 'oauth2.' . lc($provider)  . '.code'         , $oauth_data->{code} );
     $session->set( 'oauth2.' . lc($provider)  . '.version'      , $oauth_data->{version} );
-
-
 
 
 	my $res;
@@ -317,12 +342,7 @@ sub access_token_v1 {
 
 	my $res;
 	$res = $self->signin->( $self, $env, $oauth_data ) if $self->signin;
-    # use Data::Dumper; warn Dumper( $res );
-	
-	
-	# return $res if $res;
-	
-	# return $res if $res;
+	return $res if $res;
 
 	return $self->_response( YAML::Dump( $oauth_data ) );
     # my $user_obj = $realm->find_user( $user, $c );
@@ -333,11 +353,10 @@ sub access_token_v1 {
 sub build_callback_uri {
 	my ($self,$provider,$env) = @_;
 
-    # 'SCRIPT_NAME' => '/_oauth',
     # 'REQUEST_URI' => '/_oauth/twitter',
+    # 'SCRIPT_NAME' => '/_oauth',
     # 'PATH_INFO' => '/twitter',
-    # return URI->new( $env->{'psgi.url_scheme'} . '://' . $env->{HTTP_HOST} . $env->{SCRIPT_NAME} . '/' . lc($provider) . '/callback' );
-	return URI->new( $env->{'psgi.url_scheme'} . '://' . $env->{HTTP_HOST} . $env->{REQUEST_URI} . '/callback' );
+    return URI->new( $env->{'psgi.url_scheme'} . '://' . $env->{HTTP_HOST} . $env->{SCRIPT_NAME} . '/' . lc($provider) . '/callback' );
 }
 
 sub register_env {
@@ -468,6 +487,11 @@ L<http://developers.facebook.com/docs/authentication/>
 
 Facebook - Create A New App
 L<https://developers.facebook.com/apps>
+
+=item *
+
+Facebook - Permissions
+L<http://developers.facebook.com/docs/reference/api/permissions/>
 
 =item *
 
