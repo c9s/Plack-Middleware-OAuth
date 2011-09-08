@@ -452,6 +452,15 @@ You can get OAuth1 or OAuth2 access token from Session,
     $session->get( 'oauth2.facebook.access_token' );
     $session->get( 'oauth2.custom_provider' );
 
+=head1 Handle Signin 
+
+    enable 'OAuth', 
+        providers => { .... },
+        signin => sub  { 
+            my ($self,$env,$oauth_data) = @_;
+            return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
+        };
+
 =head1 Reference
 
 =for 4
