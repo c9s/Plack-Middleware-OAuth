@@ -4,9 +4,10 @@ use strict;
 use parent qw(Plack::Middleware);
 use DateTime;
 use Digest::MD5 qw(md5_hex);
-use Plack::Util::Accessor qw(providers prefix signin debug);
+use Plack::Util::Accessor qw(providers signin debug);
 use Plack::Session;
 use Plack::Response;
+use Plack::Request;
 use URI;
 use URI::Query;
 use LWP::UserAgent;
@@ -16,22 +17,14 @@ use DateTime;
 use YAML;
 use JSON;
 
-
 our $VERSION = '0.01';
-
-
 
 # routes
 #    path => { provider => ... , method => .... }
 our %routes;
 
-
 sub prepare_app {
 	my $self = shift;
-
-	# setup default api prefix
-	$self->prefix('/_oauth') unless $self->prefix;
-
 
 	my $p = $self->providers;
 	for my $provider_name ( keys %$p ) {
@@ -65,8 +58,8 @@ sub prepare_app {
 		}
 
 		# mount routes
-		my $path = $self->prefix . '/' . lc( $provider_name );
-		my $callback_path = $self->prefix . '/' . lc( $provider_name ) . '/callback';
+		my $path = '/' . lc( $provider_name );
+		my $callback_path = '/' . lc( $provider_name ) . '/callback';
 		$self->add_route( $path , { provider => $provider_name , method => 'request_token' } );
 		$self->add_route( $callback_path , { provider => $provider_name , method => 'access_token' } );
 	}
@@ -251,8 +244,8 @@ sub access_token_v2 {
 	die unless $oauth_data;
 
 	my $res;
-	$res = $self->signin->( $env, $oauth_data ) if $self->signin;
-	return $res if $res;
+	$res = $self->signin->( $self, $env, $oauth_data ) if $self->signin;
+	# return $res if $res;
 
 	# for testing
 	return $self->_response( YAML::Dump $oauth_data );
@@ -298,13 +291,18 @@ sub access_token_v1 {
     my $oauth_data = +{
 		version             => $config->{version},
 		provider            => $provider,
-		access_token        => $response->token,
-		access_token_secret => $response->token_secret,
-		extra_params        => $response->extra_params
+		params => {
+			access_token        => $response->token,
+			access_token_secret => $response->token_secret,
+			extra_params        => $response->extra_params
+		},
     };
 	my $res;
-	$res = $self->signin->( $env, $oauth_data ) if $self->signin;
-	return $res if $res;
+	$res = $self->signin->( $self, $env, $oauth_data ) if $self->signin;
+	use Data::Dumper; warn Dumper( $res );
+	
+	
+	# return $res if $res;
 	
 	# return $res if $res;
 
@@ -316,8 +314,12 @@ sub access_token_v1 {
 
 sub build_callback_uri {
 	my ($self,$provider,$env) = @_;
-	my $uri = URI->new( $env->{'psgi.url_scheme'} . '://' . $env->{HTTP_HOST} . $self->prefix . '/' . lc($provider) . '/callback' );
-	return $uri;
+
+    # 'SCRIPT_NAME' => '/_oauth',
+    # 'REQUEST_URI' => '/_oauth/twitter',
+    # 'PATH_INFO' => '/twitter',
+    # return URI->new( $env->{'psgi.url_scheme'} . '://' . $env->{HTTP_HOST} . $env->{SCRIPT_NAME} . '/' . lc($provider) . '/callback' );
+	return URI->new( $env->{'psgi.url_scheme'} . '://' . $env->{HTTP_HOST} . $env->{REQUEST_URI} . '/callback' );
 }
 
 sub register_env {
