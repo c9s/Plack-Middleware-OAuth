@@ -464,7 +464,7 @@ You can get OAuth1 or OAuth2 access token from Session,
             return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
         };
 
-Without specify C<on_signin>, OAuth middleware will use YAML to dump the response data to page.
+Without specifying C<on_signin>, OAuth middleware will use YAML to dump the response data to page.
 
 =head1 Handle Error
 
@@ -474,6 +474,28 @@ Without specify C<on_signin>, OAuth middleware will use YAML to dump the respons
             my ($self,$env,$provider,$config) = @_;
 
         };
+
+=head1 Supported Providers
+
+=for 4
+
+=item
+
+Google
+
+=item
+
+Twitter
+
+=item
+
+Facebook
+
+=item
+
+Github
+
+=back
 
 =head1 Reference
 
