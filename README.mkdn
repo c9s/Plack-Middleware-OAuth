@@ -5,7 +5,7 @@ Plack::Middleware::OAuth - Plack middleware for OAuth1, OAuth2 and builtin provi
 # DESCRIPTION
 
 [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) supports OAuth1 and OAuth2, and provides builtin configs for providers like Twitter, Github, Google, Facebook.
-The only one thing you need to mount you OAuth service is to setup your `consumer_key`, `consumer_secret` (OAuth1) or `client_id`, `client_secret`, `scope` (OAuth2).
+The only one thing you need to mount your OAuth service is to setup your `consumer_key`, `consumer_secret` (OAuth1) or `client_id`, `client_secret`, `scope` (OAuth2).
 
 [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) generates authorize url (mount_path/provider_id) and auththorize callback url (mount_path/provider_id/callback). 
 If the authorize path matches, then user will be redirected to OAuth provider to authorize your application.
@@ -116,64 +116,29 @@ Without specify `on_signin`, OAuth middleware will use YAML to dump the response
 
 # Reference
 
-- *
-
-OAuth Workflow 
+- OAuth Workflow 
 [http://hueniverse.com/oauth/guide/workflow/](http://hueniverse.com/oauth/guide/workflow/)
-
-- *
-
-OAuth 2.0 Protocal Draft
+- OAuth 2.0 Protocal Draft
 [http://tools.ietf.org/html/draft-ietf-oauth-v2](http://tools.ietf.org/html/draft-ietf-oauth-v2)
-
-- * 
-
-Github OAuth 
+- Github OAuth 
 [https://github.com/account/applications/2739](https://github.com/account/applications/2739)
-
-- *
-
-Github - Create A New Client
+- Github - Create A New Client
 [https://github.com/account/applications](https://github.com/account/applications)
-
-- *
-
-Twitter OAuth
+- Twitter OAuth
 [https://dev.twitter.com/apps/1225208/show](https://dev.twitter.com/apps/1225208/show)
-
-- *
-
-Twitter - Create A New App
+- Twitter - Create A New App
 [https://dev.twitter.com/apps](https://dev.twitter.com/apps)
 
 
-
-- *
-
-Facebook OAuth
+- Facebook OAuth
 [http://developers.facebook.com/docs/authentication/](http://developers.facebook.com/docs/authentication/)
-
-- *
-
-Facebook - Create A New App
+- Facebook - Create A New App
 [https://developers.facebook.com/apps](https://developers.facebook.com/apps)
-
-- *
-
-Facebook - Permissions
+- Facebook - Permissions
 [http://developers.facebook.com/docs/reference/api/permissions/](http://developers.facebook.com/docs/reference/api/permissions/)
-
-- *
-
-Facebook - How to handle expired access_token
+- Facebook - How to handle expired access_token
 [https://developers.facebook.com/blog/post/500/](https://developers.facebook.com/blog/post/500/)
-
-- *
-
-Google OAuth
+- Google OAuth
 [http://code.google.com/apis/accounts/docs/OAuth2.html](http://code.google.com/apis/accounts/docs/OAuth2.html)
-
-- *
-
-Google OAuth Scope:
+- Google OAuth Scope:
 [http://code.google.com/apis/gdata/faq.html#AuthScopes](http://code.google.com/apis/gdata/faq.html#AuthScopes)

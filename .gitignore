@@ -1,4 +1,11 @@
-.shipit
-inc/
-tmp
-eg/app.psgi.dev
+/blib/
+/eg/app.psgi.dev
+/inc/
+/Makefile
+/Makefile.old
+/META.yml
+/MYMETA.json
+/MYMETA.yml
+/pm_to_blib
+/.shipit
+/tmp
