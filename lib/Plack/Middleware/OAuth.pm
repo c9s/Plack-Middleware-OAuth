@@ -174,7 +174,7 @@ sub request_token_v1 {
 		# failed.
 		my $plack_res = Plack::Response->new(200);
 		$plack_res->body( $res->content );
-        return $plack_res->finialize;
+        return $plack_res->finalize;
     }
 }
 
