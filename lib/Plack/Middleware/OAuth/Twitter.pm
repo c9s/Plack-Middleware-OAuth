@@ -6,7 +6,7 @@ sub config { {
 	version => 1,  # oauth 1.0a
 	request_token_url => 'https://api.twitter.com/oauth/request_token',
 	access_token_url  => 'https://api.twitter.com/oauth/access_token',
-	authorize_url     => 'http://api.twitter.com/oauth/authorize',
+	authorize_url     => 'https://api.twitter.com/oauth/authenticate',
 	request_method   => 'POST',
 } }
 
