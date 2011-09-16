@@ -1,5 +1,9 @@
 Revision history for Plack-Middleware-OAuth
 
-0.01    Date/time
+0.02    2011-09-16
+        Fix minor typo.
+        Fix twitter re-auth.
+
+0.01    2011-09-10
         First version, released on an unsuspecting world.
 
