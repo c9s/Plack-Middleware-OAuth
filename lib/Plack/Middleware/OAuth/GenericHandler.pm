@@ -32,7 +32,7 @@ sub to_json {
 
 sub to_yaml {
     my ($self, $obj) = @_;
-    return $self->render( Dump( $obj ) , 'text/yaml' );
+    return $self->render( Dump( $obj ) , 'text/plain' );
 }
 
 sub render {

@@ -38,6 +38,7 @@ sub default_callback {
     my $self = shift;
     my $provider = $self->provider;
     my $env = $self->env;
+
     # 'REQUEST_URI' => '/oauth/twitter',
     # 'SCRIPT_NAME' => '/oauth',
     # 'PATH_INFO' => '/twitter',
