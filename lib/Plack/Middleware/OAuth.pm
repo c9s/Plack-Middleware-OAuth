@@ -7,12 +7,13 @@ has config => ( is => "rw" );
 has provider => ( is => "rw" );
 
 sub build_args {
-    my ($self,$provider,$config,$code) = @_;
+    my ($self,$code) = @_;
+    my $config = $self->config;
 	my %args = (
 		client_id     => $config->{client_id},
 		client_secret => $config->{client_secret},
 		redirect_uri  => $config->{redirect_uri} 
-                || $self->build_callback_uri( $provider , $self->env ),
+                || $self->build_callback_uri( $self->provider , $self->env ),
 		scope         => $config->{scope},
 		grant_type    => $config->{grant_type},
 		code          => $code,
@@ -298,9 +299,9 @@ sub access_token_v2 {
 
 	# http://YOUR_URL?code=A_CODE_GENERATED_BY_SERVER
     my $req = Plack::Middleware::Handler::AccessToken::V2->new( $env );
-    $req->set_provider( $provider );
-    $req->set_config( $config );
-    return $req->run;
+    $req->provider( $provider );
+    $req->config( $config );
+    return $req->run();
 
 }
 
