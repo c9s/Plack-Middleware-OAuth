@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 use Test::More;
+use lib 'lib';
 
 BEGIN {
     use_ok( 'Plack::Middleware::OAuth' ) || print "Bail out!\n";

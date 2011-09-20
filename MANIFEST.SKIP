@@ -1,5 +1,6 @@
 tmp
-app.psgi
 eg/app.psgi.dev
 .git
 blib/
+private/
+Makefile

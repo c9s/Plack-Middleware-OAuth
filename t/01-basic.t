@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+use lib 'lib';
 use Plack::Test;
 use Test::More;
 use Plack::Middleware::OAuth;
