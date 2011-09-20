@@ -107,38 +107,19 @@ sub _response {
 sub request_token {
 	my ($self,$env,$provider_name) = @_;
 	my $config = $self->providers->{ $provider_name };
-	return $self->request_token_v1( $env, $provider_name , $config ) if $config->{version} == 1;
-	return $self->request_token_v2( $env, $provider_name , $config ) if $config->{version} == 2;
-}
-
-sub request_token_v2 {
-	my ($self,$env,$provider,$config) = @_;
-    my $req = Plack::Middleware::OAuth::Handler::RequestTokenV2->new( $env );
-    $req->provider( $provider );
+    my $class = $config->{version} == 1 ? 
+                'Plack::Middleware::OAuth::Handler::RequestTokenV1' :
+                $config->{version} == 2 ?
+                    'Plack::Middleware::OAuth::Handler::RequestTokenV2' : 
+                    'Plack::Middleware::OAuth::Handler::RequestTokenV1' ; # default class.
+    my $req = $class->new( $env );
+    $req->provider( $provider_name );
     $req->config( $config );
     return $req->run();
 }
-
-
-
-sub request_token_v1 { 
-	my ($self,$env,$provider,$config) = @_;
-    my $req = Plack::Middleware::OAuth::Handler::RequestTokenV2->new( $env );
-    $req->provider( $provider );
-    $req->config( $config );
-    return $req->run();
-
-}
-
-
-
-
 
 
 # Access token methods ....
-
-
-
 sub access_token {
 	my ($self,$env,$provider) = @_;
 	my $config = $self->providers->{ $provider };

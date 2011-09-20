@@ -2,17 +2,7 @@ package Plack::Middleware::OAuth::Handler::RequestTokenV1;
 use warnings;
 use strict;
 use parent qw(Plack::Middleware::OAuth::Handler);
-
-sub default_callback {
-    my $self = shift;
-    my $provider = $self->provider;
-    my $env = $self->env;
-    # 'REQUEST_URI' => '/oauth/twitter',
-    # 'SCRIPT_NAME' => '/oauth',
-    # 'PATH_INFO' => '/twitter',
-    return URI->new( $env->{'psgi.url_scheme'} . '://' . 
-        $env->{HTTP_HOST} . $env->{SCRIPT_NAME} . '/' . lc($provider) . '/callback' );
-}
+use Net::OAuth;
 
 sub run {
     my $self = shift;
