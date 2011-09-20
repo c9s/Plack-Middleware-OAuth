@@ -5,25 +5,14 @@ use URI::Query;
 use LWP::UserAgent;
 use Plack::Util::Accessor qw(config provider on_success on_error);
 
-sub build_callback_uri {
-	my ($self) = @_;
-    my $provider = $self->provider;
-    my $env = $self->env;
-    # 'REQUEST_URI' => '/_oauth/twitter',
-    # 'SCRIPT_NAME' => '/_oauth',
-    # 'PATH_INFO' => '/twitter',
-    return URI->new( $env->{'psgi.url_scheme'} . '://' . 
-        $env->{HTTP_HOST} . $env->{SCRIPT_NAME} . '/' . lc($provider) . '/callback' );
-}
-
 sub build_args {
     my ($self,$code) = @_;
     my $config = $self->config;
+
 	my %args = (
 		client_id     => $config->{client_id},
 		client_secret => $config->{client_secret},
-		redirect_uri  => $config->{redirect_uri} 
-                             || $self->build_callback_uri,
+		redirect_uri  => $config->{redirect_uri} || $self->default_callback,
 		scope         => $config->{scope},
 		grant_type    => $config->{grant_type},
 		code          => $code,

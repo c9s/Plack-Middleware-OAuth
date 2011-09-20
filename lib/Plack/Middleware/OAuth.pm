@@ -138,68 +138,9 @@ sub access_token_v2 {
     $req->provider( $provider );
     $req->config( $config );
     return $req->run();
-
 }
 
 sub access_token_v1 {
-	my ($self,$env,$provider,$config) = @_;
-
-    # http://app.local:3000/oauth/twitter/callback?
-    #   oauth_token=
-    #   oauth_verifier=
-    # my $response = Net::OAuth->response( 'user auth' )->from_hash( request->params );
-	my $req = Plack::Request->new( $env );
-    my $response = Net::OAuth->response( 'user auth' )->from_hash( { 
-        oauth_token    => $req->param('oauth_token'),
-        oauth_verifier => $req->param('oauth_verifier'),
-    });
-
-    my $request = Net::OAuth->request( 'access token' )->new(
-        %$config,
-
-        timestamp => DateTime->now->epoch,
-        nonce => md5_hex(time),
-
-        token => $response->token,
-        token_secret => '',
-		request_url => $config->{access_token_url},
-        verifier    => $req->param('oauth_verifier'),
-    );
-    $request->sign;
-
-    my $ua = LWP::UserAgent->new;
-    my $ua_response = $ua->request( GET $request->to_url );
-
-    unless($ua_response->is_success) {
-        return $self->on_error->( $self, $env, $provider, $config ) if $self->on_error;
-        return $self->_response( $ua_response->status_line . ' ' . $ua_response->content );
-    }
-
-
-    $response = Net::OAuth->response( 'access token' )->from_post_body( $ua_response->content );
-
-    my $oauth_data = +{
-		version             => $config->{version},
-		provider            => $provider,
-		params => {
-			access_token        => $response->token,
-			access_token_secret => $response->token_secret,
-			extra_params        => $response->extra_params
-		},
-    };
-
-
-#     my $session = $env->{'psgix.session'};
-#     # my $session = Plack::Session->new( $env );
-#     $session->set( 'oauth.' . lc($provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
-#     $session->set( 'oauth.' . lc($provider)  . '.access_token_secret' , $oauth_data->{params}->{access_token_secret} );
-
-	my $res;
-	$res = $self->on_success->( $self, $env, $oauth_data ) if $self->on_success;
-	return $res if $res;
-
-
-	return $self->_response( YAML::Dump( $oauth_data ) );
 }
 
 sub build_callback_uri {

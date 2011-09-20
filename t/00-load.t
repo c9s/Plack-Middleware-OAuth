@@ -7,6 +7,8 @@ BEGIN {
     use_ok( 'Plack::Middleware::OAuth::GenericHandler' );
     use_ok( 'Plack::Middleware::OAuth::Handler::RequestTokenV1' );
     use_ok( 'Plack::Middleware::OAuth::Handler::RequestTokenV2' );
+    use_ok( 'Plack::Middleware::OAuth::Handler::AccessTokenV1' );
+    use_ok( 'Plack::Middleware::OAuth::Handler::AccessTokenV2' );
 }
 
 diag( "Testing Plack::Middleware::OAuth $Plack::Middleware::OAuth::VERSION, Perl $], $^X" );
