@@ -10,9 +10,6 @@ use Plack::Response;
 use Plack::Request;
 use URI;
 use URI::Query;
-use LWP::UserAgent;
-use Net::OAuth;
-use HTTP::Request::Common;
 use Plack::Middleware::OAuth::Handler::RequestTokenV1;
 use Plack::Middleware::OAuth::Handler::RequestTokenV2;
 use Plack::Middleware::OAuth::Handler::AccessTokenV1;
@@ -30,7 +27,6 @@ our %routes;
 
 sub prepare_app {
 	my $self = shift;
-
 	my $p = $self->providers;
 	for my $provider_name ( keys %$p ) {
 		my $config = $p->{$provider_name};
@@ -64,7 +60,11 @@ sub prepare_app {
 		# mount routes
 		my $path = '/' . lc( $provider_name );
 		my $callback_path = '/' . lc( $provider_name ) . '/callback';
+
+        print STDERR "[OAuth] Mounting $provider_name to $path ...\n";
 		$self->add_route( $path , { provider => $provider_name , method => 'request_token' } );
+
+        print STDERR "[OAuth] Mounting $provider_name callback to $callback_path ...\n";
 		$self->add_route( $callback_path , { provider => $provider_name , method => 'access_token' } );
 	}
 }

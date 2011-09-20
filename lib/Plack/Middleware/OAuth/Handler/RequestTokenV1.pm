@@ -3,6 +3,9 @@ use warnings;
 use strict;
 use parent qw(Plack::Middleware::OAuth::Handler);
 use Net::OAuth;
+use Digest::MD5 qw(md5_hex);
+use HTTP::Request::Common;
+use LWP::UserAgent;
 
 sub run {
     my $self = shift;
