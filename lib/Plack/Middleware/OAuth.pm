@@ -34,6 +34,20 @@ sub version2_required {
     qw(client_id client_secret authorize_url access_token_url);
 }
 
+
+sub arguments_checking {
+    my ($self,$provider_name,$config) = @_;
+    # version 1 checking
+    given ( $config->{version} ) {
+        when(2) {  
+            for( $self->version2_required ) { die "Please setup $_ for $provider_name" unless $config->{$_}; }
+        }
+        when(1) {
+            for( $self->version1_required ) { die "Please setup $_ for $provider_name" unless $config->{$_}; }
+        }
+    }
+}
+
 sub prepare_app {
 	my $self = shift;
 	my $p = $self->providers;
@@ -53,18 +67,8 @@ sub prepare_app {
 		$config->{signature_method} ||= 'HMAC-SHA1';
 		$config->{version} ||= 1;
 
-		# version 1 checking
-		if( $config->{version} == 1 ) {
-			for( $self->version1_required ) 
-			{
-				die "Please setup $_ for $provider_name" unless $config->{$_};
-			}
-		}
-		elsif( $config->{version} == 2 ) {
-			for( $self->version2_required ) {
-				die "Please setup $_ for $provider_name" unless $config->{$_};
-			}
-		}
+
+        $self->arguments_checking( $provider_name , $config );
 
 		# mount routes
 		my $path = '/' . lc( $provider_name );
