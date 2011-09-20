@@ -19,7 +19,7 @@ use YAML;
 use JSON;
 use feature qw(switch say);
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 # routes cache
 #    path => { provider => ... , method => .... }
