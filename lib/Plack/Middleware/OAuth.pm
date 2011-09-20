@@ -74,7 +74,6 @@ sub get_provider_names {
 	return keys %{ $self->providers };
 }
 
-
 sub add_route { 
 	my ($self,$path,$config) = @_;
 	$routes{ $path } = $config;
