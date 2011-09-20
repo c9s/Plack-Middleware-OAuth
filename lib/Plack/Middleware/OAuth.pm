@@ -348,6 +348,11 @@ L<https://github.com/account/applications>
 
 =item *
 
+Twitter - Using OAuth 1.0a
+L<https://dev.twitter.com/docs/auth/oauth>
+
+=item *
+
 Twitter - Moving from Basic Auth to OAuth
 L<https://dev.twitter.com/docs/auth/moving-from-basic-auth-to-oauth>
 
