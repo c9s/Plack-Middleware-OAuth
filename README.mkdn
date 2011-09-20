@@ -85,6 +85,10 @@ The callback/redirect URL is set to {SCHEMA}://{HTTP_HOST}/{prefix}/{provider}/c
 
 
 
+
+
+
+
 # Sessions
 
 You can get OAuth1 or OAuth2 access token from Session,
@@ -107,6 +111,34 @@ You can get OAuth1 or OAuth2 access token from Session,
 
 Without specifying `on_signin`, OAuth middleware will use YAML to dump the response data to page.
 
+# OAuth1 AccessToken Callback Data Structure
+
+Twitter uses OAuth 1.0a, and the access token callback returns data like this:
+
+    ---
+    params:
+        access_token: {{string}}
+        access_token_secret: {{string}}
+        extra_params:
+            screen_name: {{screen name}}
+            user_id: {{user id}}
+    provider: Twitter
+    version: 1
+
+
+
+# OAuth2 AccessToken Callback Data Structure
+
+Github uses OAuth 2.0, and the access token callback returns data like this:
+
+    ---
+    params:
+        code: {{string}}
+        access_token: {{string}}
+        token_type: bearer
+    provider: Github
+    version: 2
+
 # Handle Error
 
     enable 'OAuth', 
@@ -123,22 +155,24 @@ Without specifying `on_signin`, OAuth middleware will use YAML to dump the respo
 - Facebook
 - Github
 
+# See Also
+
+[Net::OAuth](http://search.cpan.org/perldoc?Net::OAuth), [Net::OAuth2](http://search.cpan.org/perldoc?Net::OAuth2)
+
 # Reference
 
 - OAuth Workflow 
 [http://hueniverse.com/oauth/guide/workflow/](http://hueniverse.com/oauth/guide/workflow/)
 - OAuth 2.0 Protocal Draft
 [http://tools.ietf.org/html/draft-ietf-oauth-v2](http://tools.ietf.org/html/draft-ietf-oauth-v2)
-- Github OAuth 
-[https://github.com/account/applications/2739](https://github.com/account/applications/2739)
 - Github - Create A New Client
 [https://github.com/account/applications](https://github.com/account/applications)
-- Twitter OAuth
-[https://dev.twitter.com/apps/1225208/show](https://dev.twitter.com/apps/1225208/show)
+- Twitter - Moving from Basic Auth to OAuth
+[https://dev.twitter.com/docs/auth/moving-from-basic-auth-to-oauth](https://dev.twitter.com/docs/auth/moving-from-basic-auth-to-oauth)
+- Single-user OAuth with Examples
+[https://dev.twitter.com/docs/auth/oauth/single-user-with-examples](https://dev.twitter.com/docs/auth/oauth/single-user-with-examples)
 - Twitter - Create A New App
 [https://dev.twitter.com/apps](https://dev.twitter.com/apps)
-
-
 - Facebook OAuth
 [http://developers.facebook.com/docs/authentication/](http://developers.facebook.com/docs/authentication/)
 - Facebook - Create A New App
