@@ -8,8 +8,8 @@ our $json_any;
 sub run { 
     my $self = $_[0];
     # get method or post method ?
-    return $self->get( ) $self->method eq 'GET';
-    return $self->post( ) $self->method eq 'POST';
+    return $self->get if $self->method eq 'GET';
+    return $self->post if $self->method eq 'POST';
 }
 
 
@@ -42,14 +42,14 @@ sub render {
 }
 
 package Plack::Middleware::OAuth::Handler::AccessToken;
-use parent qw(GenericRequestHandler);
+use base qw(GenericRequestHandler);
 
 sub run {
 
 }
 
 package Plack::Middleware::OAuth::Handler::RequestToken;
-use parent qw(GenericRequestHandler);
+use base qw(GenericRequestHandler);
 sub run {
 
 }
