@@ -1,3 +1,66 @@
+package GenericRequestHandler;
+use parent qw(Plack::Request);
+use YAML::Any;
+use JSON::Any;
+
+our $json_any;
+
+sub new { 
+    my ($class,$env) = @_;
+    my $self = bless {  } , $class;
+    $self->{env} = $env;
+    return $self;
+}
+
+sub run { 
+    my $self = $_[0];
+    # get method or post method ?
+    return $self->get( ) $self->method eq 'GET';
+    return $self->post( ) $self->method eq 'POST';
+}
+
+
+# get method handler
+sub get {  }
+
+# get post handler
+sub post {  }
+
+# default content_type
+sub content_type { 'text/html' }
+
+sub to_json { 
+    my ($self, $obj) = @_;
+    $json_any ||= JSON::Any->new;
+    return $self->render( $json_any->encode($obj) , 'text/json' );
+}
+
+sub to_yaml {
+    my ($self, $obj) = @_;
+    return $self->render( Dump( $obj ) , 'text/yaml' );
+}
+
+sub render {
+    my ($self,$body,$content_type) = @_;
+    my $resp = $self->new_response( 200 );
+    $resp->content_type( $content_type || $self->content_type );
+    $resp->body( $body );
+    return $resp->finalize;
+}
+
+package Plack::Middleware::OAuth::Handler::AccessToken;
+use parent qw(GenericRequestHandler);
+
+sub run {
+
+}
+
+package Plack::Middleware::OAuth::Handler::RequestToken;
+use parent qw(GenericRequestHandler);
+sub run {
+
+}
+
 package Plack::Middleware::OAuth;
 use warnings;
 use strict;
@@ -19,7 +82,7 @@ use JSON;
 
 our $VERSION = '0.03';
 
-# routes
+# routes cache
 #    path => { provider => ... , method => .... }
 our %routes;
 
@@ -51,7 +114,6 @@ sub prepare_app {
 			}
 		}
 		elsif( $config->{version} == 2 ) {
-
 			for( qw(client_id client_secret authorize_url access_token_url) ) {
 				die "Please setup $_ for $provider_name" unless $config->{$_};
 			}
