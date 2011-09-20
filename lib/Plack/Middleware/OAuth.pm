@@ -5,13 +5,6 @@ use JSON::Any;
 
 our $json_any;
 
-sub new { 
-    my ($class,$env) = @_;
-    my $self = bless {  } , $class;
-    $self->{env} = $env;
-    return $self;
-}
-
 sub run { 
     my $self = $_[0];
     # get method or post method ?
