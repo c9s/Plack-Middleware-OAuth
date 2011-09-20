@@ -8,24 +8,18 @@ use DateTime;
 use Digest::MD5 qw(md5_hex);
 use HTTP::Request::Common;
 
+
 sub build_args {
-	my ($self) = @_;
+	my $self = $_[0];
 	my $config = $self->config;
-
 	# $config contains: consumer_key consumer_secret request_token_url access_token_url request_method signature_method
-
 	my %args = (
-		consumer_key      => $config->{consumer_key},
-		consumer_secret   => $config->{consumer_secret},
-		request_method    => $config->{request_method},
-		signature_method  => $config->{signature_method},
-
-		timestamp    => DateTime->now->epoch,
-		nonce        => md5_hex(time),
-
+		$self->build_v1_common_args,
 		token        => $self->param('oauth_token'),
 		token_secret => '',
-		request_url  => $config->{access_token_url},
+
+		request_url      => $config->{access_token_url},
+		request_method   => $config->{access_token_method},
 		verifier     => $self->param('oauth_verifier'),
 	);
 	return %args;

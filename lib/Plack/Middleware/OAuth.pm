@@ -302,8 +302,13 @@ L<https://github.com/account/applications>
 
 =item *
 
-Twitter OAuth
-L<https://dev.twitter.com/apps/1225208/show>
+Twitter - Moving from Basic Auth to OAuth
+L<https://dev.twitter.com/docs/auth/moving-from-basic-auth-to-oauth>
+
+=item *
+
+Single-user OAuth with Examples
+L<https://dev.twitter.com/docs/auth/oauth/single-user-with-examples>
 
 =item *
 

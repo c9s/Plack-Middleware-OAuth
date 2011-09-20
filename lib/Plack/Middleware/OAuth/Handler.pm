@@ -46,5 +46,17 @@ sub default_callback {
         $env->{HTTP_HOST} . $env->{SCRIPT_NAME} . '/' . lc($provider) . '/callback' );
 }
 
+sub build_v1_common_args {
+	my $self = $_[0];
+	my $config = $self->config;
+	return (
+		consumer_key     => $config->{consumer_key},
+		consumer_secret  => $config->{consumer_secret},
+		signature_method => $config->{signature_method},
+		timestamp        => DateTime->now->epoch,
+		nonce            => md5_hex(time),
+	);
+}
+
 1;
 
