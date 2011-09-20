@@ -13,10 +13,14 @@ use URI::Query;
 use LWP::UserAgent;
 use Net::OAuth;
 use HTTP::Request::Common;
+use Plack::Middleware::OAuth::Handler::RequestTokenV1;
 use Plack::Middleware::OAuth::Handler::RequestTokenV2;
+use Plack::Middleware::OAuth::Handler::AccessTokenV1;
+use Plack::Middleware::OAuth::Handler::AccessTokenV2;
 use DateTime;
 use YAML;
 use JSON;
+use feature qw(switch say);
 
 our $VERSION = '0.03';
 
@@ -96,24 +100,17 @@ sub call {
 }
 
 
-
-sub _response {
-	my ($self,$content) = @_;
-	my $resp = Plack::Response->new( 200 );
-	$resp->body( $content );
-	return $resp->finalize;
-}
-
 sub request_token {
-	my ($self,$env,$provider_name) = @_;
-	my $config = $self->providers->{ $provider_name };
-    my $class = $config->{version} == 1 ? 
-                'Plack::Middleware::OAuth::Handler::RequestTokenV1' :
-                $config->{version} == 2 ?
-                    'Plack::Middleware::OAuth::Handler::RequestTokenV2' : 
-                    'Plack::Middleware::OAuth::Handler::RequestTokenV1' ; # default class.
+	my ($self,$env,$provider) = @_;  # env and provider id
+	my $config = $self->providers->{ $provider };
+    my $class;
+    given( $config->{version} ) {
+        when (2) { $class = 'Plack::Middleware::OAuth::Handler::RequestTokenV2' }
+        default  { $class = 'Plack::Middleware::OAuth::Handler::RequestTokenV1' }
+    }
+
     my $req = $class->new( $env );
-    $req->provider( $provider_name );
+    $req->provider( $provider );
     $req->config( $config );
     return $req->run();
 }
@@ -123,38 +120,20 @@ sub request_token {
 sub access_token {
 	my ($self,$env,$provider) = @_;
 	my $config = $self->providers->{ $provider };
-	return $self->access_token_v1( $env, $provider , $config ) if $config->{version} == 1;
-	return $self->access_token_v2( $env, $provider , $config ) if $config->{version} == 2;
-}
 
+    my $class;
+    given( $config->{version} ) {
+        when (2) { $class = 'Plack::Middleware::OAuth::Handler::AccessTokenV2' }
+        default  { $class = 'Plack::Middleware::OAuth::Handler::AccessTokenV1' }
+    }
 
-sub access_token_v2 {
-	my ($self,$env,$provider,$config) = @_;
-
-	# http://YOUR_URL?code=A_CODE_GENERATED_BY_SERVER
-    my $req = Plack::Middleware::OAuth::Handler::AccessTokenV2->new( $env );
+    my $req = $class->new( $env );
     $req->on_success(sub {  });
     $req->on_error(sub {  });
     $req->provider( $provider );
     $req->config( $config );
     return $req->run();
 }
-
-sub access_token_v1 {
-}
-
-sub build_callback_uri {
-	my ($self,$provider,$env) = @_;
-
-    # 'REQUEST_URI' => '/_oauth/twitter',
-    # 'SCRIPT_NAME' => '/_oauth',
-    # 'PATH_INFO' => '/twitter',
-    return URI->new( $env->{'psgi.url_scheme'} . '://' . $env->{HTTP_HOST} . $env->{SCRIPT_NAME} . '/' . lc($provider) . '/callback' );
-}
-
-
-package Plack::Middleware::OAuth::Handler::AccessToken::V1;
-use parent qw(Plack::Middleware::OAuth::Handler);
 
 1;
 __END__

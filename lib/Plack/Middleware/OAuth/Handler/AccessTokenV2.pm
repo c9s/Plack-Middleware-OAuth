@@ -3,7 +3,6 @@ use parent qw(Plack::Middleware::OAuth::Handler);
 use URI;
 use URI::Query;
 use LWP::UserAgent;
-use Plack::Util::Accessor qw(config provider on_success on_error);
 
 sub build_args {
     my ($self,$code) = @_;
