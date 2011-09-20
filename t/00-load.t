@@ -1,9 +1,12 @@
-#!perl -T
-
-use Test::More tests => 1;
+#!/usr/bin/env perl
+use Test::More;
 
 BEGIN {
     use_ok( 'Plack::Middleware::OAuth' ) || print "Bail out!\n";
+    use_ok( 'Plack::Middleware::OAuth::Handler' );
+    use_ok( 'Plack::Middleware::OAuth::GenericHandler' );
 }
 
 diag( "Testing Plack::Middleware::OAuth $Plack::Middleware::OAuth::VERSION, Perl $], $^X" );
+
+done_testing();
