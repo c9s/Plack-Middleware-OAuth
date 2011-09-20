@@ -43,4 +43,11 @@ sub render {
     return $resp->finalize;
 }
 
+sub redirect {
+	my ($self,$uri,$code) = @_;
+	my $resp = $self->new_response( $code );
+	$resp->redirect( $uri );
+	return $resp->finalize;
+}
+
 1;

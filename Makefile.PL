@@ -9,7 +9,7 @@ all_from       'lib/Plack/Middleware/OAuth.pm';
 readme_markdown_from 'lib/Plack/Middleware/OAuth.pm';
 
 requires       
-    'Plack::Session' => 0,
+    'Plack::Middleware::Session' => 0,
     'File::Spec'  => 0,
     'DateTime' => 0,
     'Digest::MD5' => 0,
@@ -19,8 +19,8 @@ requires
     'Net::OAuth' => 0,
     'HTTP::Request::Common' => 0,
     'DateTime' => 0,
-    'YAML' => 0,
-    'JSON' => 0;
+    'YAML::Any' => 0,
+    'JSON::Any' => 0;
 
 # test_requires  'Test::More'  => '0.42';
 # recommends     'Text::CSV_XS'=> '0.50';
