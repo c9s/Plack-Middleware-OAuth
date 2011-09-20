@@ -48,6 +48,14 @@ sub arguments_checking {
     }
 }
 
+
+sub load_config_from_pkg {
+    my ($self,$provider_name) = @_;
+    my $class = __PACKAGE__ . '::' . $provider_name;
+    $class = Plack::Util::load_class( $class );
+    return $class->config( $self );
+}
+
 sub prepare_app {
 	my $self = shift;
 	my $p = $self->providers;
@@ -56,9 +64,7 @@ sub prepare_app {
 
 		my $fc = ord(substr( $provider_name , 0 , 1 ));
 		if( $fc >= 65 && $fc <= 90 ) {
-			my $class = __PACKAGE__ . '::' . $provider_name;
-			$class = Plack::Util::load_class( $class );
-			my $default_config = $class->config( $self );
+			my $default_config = $self->load_config_from_pkg( $provider_name );
 			for my $k ( keys %$default_config ) {
 				$config->{ $k } ||= $default_config->{ $k };
 			}
@@ -66,7 +72,6 @@ sub prepare_app {
 
 		$config->{signature_method} ||= 'HMAC-SHA1';
 		$config->{version} ||= 1;
-
 
         $self->arguments_checking( $provider_name , $config );
 
