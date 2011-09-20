@@ -27,9 +27,17 @@ For more details, please check the example psgi in `eg/` directory.
         mount '/oauth' => builder {
             enable 'OAuth', 
 
-                on_signin => sub  { 
-                    my ($self,$env,$oauth_data) = @_;
+                on_success => sub  { 
+                    my ($self,$oauth_data) = @_;
+                    my $env = $self->env;
+
+                    return $self->render( '..html content..' );
+                    return $self->redirect( .... URL ... );
+
                     return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
+
+
+
                 },
 
                 on_error => sub {  ...  },
@@ -100,16 +108,21 @@ You can get OAuth1 or OAuth2 access token from Session,
     $session->get( 'oauth2.facebook.access_token' );
     $session->get( 'oauth2.custom_provider' );
 
-# Specify Signin Callback
+# Specify Success Callback
+
+When access token is got, success handler will be called: 
 
     enable 'OAuth', 
         providers => { .... },
-        on_signin => sub  { 
-            my ($self,$env,$oauth_data) = @_;
+        on_success => sub  { 
+            my ($self,$oauth_data) = @_;
+
+            # $self: Plack::Request object
+
             return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
         };
 
-Without specifying `on_signin`, OAuth middleware will use YAML to dump the response data to page.
+Without specifying `on_success`, OAuth middleware will use YAML to dump the response data to page.
 
 # OAuth1 AccessToken Callback Data Structure
 
@@ -167,6 +180,8 @@ Github uses OAuth 2.0, and the access token callback returns data like this:
 [http://tools.ietf.org/html/draft-ietf-oauth-v2](http://tools.ietf.org/html/draft-ietf-oauth-v2)
 - Github - Create A New Client
 [https://github.com/account/applications](https://github.com/account/applications)
+- Twitter - Using OAuth 1.0a
+[https://dev.twitter.com/docs/auth/oauth](https://dev.twitter.com/docs/auth/oauth)
 - Twitter - Moving from Basic Auth to OAuth
 [https://dev.twitter.com/docs/auth/moving-from-basic-auth-to-oauth](https://dev.twitter.com/docs/auth/moving-from-basic-auth-to-oauth)
 - Single-user OAuth with Examples
