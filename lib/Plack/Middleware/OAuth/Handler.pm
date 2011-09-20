@@ -2,6 +2,8 @@ package Plack::Middleware::OAuth::Handler;
 use parent qw(Plack::Middleware::OAuth::GenericHandler);
 use warnings;
 use strict;
+use Digest::MD5 qw(md5_hex);
+use DateTime;
 use Plack::Util::Accessor qw(config provider on_success on_error);
 
 =head1 NAME

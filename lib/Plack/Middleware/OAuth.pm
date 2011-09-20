@@ -46,7 +46,7 @@ sub prepare_app {
 
 		# version 1 checking
 		if( $config->{version} == 1 ) {
-			for( qw(consumer_key consumer_secret request_token_url access_token_url request_method signature_method) ) 
+			for( qw(consumer_key consumer_secret request_token_url access_token_url request_token_method access_token_method signature_method) ) 
 			{
 				die "Please setup $_ for $provider_name" unless $config->{$_};
 			}
@@ -223,6 +223,8 @@ For more details, please check the example psgi in F<eg/> directory.
 The callback/redirect URL is set to {SCHEMA}://{HTTP_HOST}/{prefix}/{provider}/callback by default.
 
 
+
+
 =head1 Sessions
 
 You can get OAuth1 or OAuth2 access token from Session,
@@ -244,6 +246,33 @@ You can get OAuth1 or OAuth2 access token from Session,
         };
 
 Without specifying C<on_signin>, OAuth middleware will use YAML to dump the response data to page.
+
+=head1 OAuth1 AccessToken Callback Data Structure
+
+Twitter uses OAuth 1.0a, and the access token callback returns data like this:
+
+    ---
+    params:
+        access_token: {{string}}
+        access_token_secret: {{string}}
+        extra_params:
+            screen_name: {{screen name}}
+            user_id: {{user id}}
+    provider: Twitter
+    version: 1
+
+
+=head1 OAuth2 AccessToken Callback Data Structure
+
+Github uses OAuth 2.0, and the access token callback returns data like this:
+
+    ---
+    code: {{string}}
+    params:
+        access_token: {{string}}
+        token_type: bearer
+    provider: Github
+    version: 2
 
 =head1 Handle Error
 
@@ -290,11 +319,6 @@ L<http://hueniverse.com/oauth/guide/workflow/>
 OAuth 2.0 Protocal Draft
 L<http://tools.ietf.org/html/draft-ietf-oauth-v2>
 
-=item * 
-
-Github OAuth 
-L<https://github.com/account/applications/2739>
-
 =item *
 
 Github - Create A New Client
@@ -314,7 +338,6 @@ L<https://dev.twitter.com/docs/auth/oauth/single-user-with-examples>
 
 Twitter - Create A New App
 L<https://dev.twitter.com/apps>
-
 
 =item *
 
