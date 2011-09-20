@@ -305,6 +305,10 @@ Github
 
 =back
 
+=head1 See Also
+
+L<Net::OAuth>, L<Net::OAuth2>
+
 =head1 Reference
 
 =for 4
