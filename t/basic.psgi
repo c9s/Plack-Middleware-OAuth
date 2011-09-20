@@ -6,7 +6,7 @@ my $app = sub {
 };
 builder {
     mount '/oauth' => builder { 
-        enable 'OAuth';
+        enable 'OAuth', providers => {  };
     };
     mount '/' => builder { $app };
 };
