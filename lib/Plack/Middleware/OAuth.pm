@@ -267,8 +267,8 @@ Twitter uses OAuth 1.0a, and the access token callback returns data like this:
 Github uses OAuth 2.0, and the access token callback returns data like this:
 
     ---
-    code: {{string}}
     params:
+        code: {{string}}
         access_token: {{string}}
         token_type: bearer
     provider: Github

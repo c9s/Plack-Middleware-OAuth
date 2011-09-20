@@ -45,8 +45,10 @@ sub get_access_token {
 		$oauth_data = { 
 			version      => $config->{version},  # oauth version
 			provider     => $provider,
-			params       => $params,
-			code         => $code
+			params       => {
+				%$params,
+				code => $code,
+			}
 		};
 	} else {
 		my $qq = URI::Query->new( $ua_response->content );
@@ -54,8 +56,10 @@ sub get_access_token {
 		$oauth_data = { 
 			version      => $config->{version},  # oauth version
 			provider     => $provider,
-			params       => \%params,
-			code         => $code
+			params       => { 
+				%params,
+				code => $code
+			}
 		};
 	}
     return $oauth_data;
