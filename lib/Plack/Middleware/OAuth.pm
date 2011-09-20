@@ -270,8 +270,17 @@ When access token is got, success handler will be called:
         on_success => sub  { 
             my ($self,$oauth_data) = @_;
 
-            # $self: Plack::Request object
+            # $self: Plack::Middleware::OAuth::Handler (isa Plack::Request) object
 
+            return $self->render( .... );
+
+            return $self->redirect( .... );
+
+            return $self->to_yaml( .... );
+
+            return $self->to_json( .... );
+
+            # or just return a raw arrayref
             return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
         };
 
@@ -304,12 +313,16 @@ Github uses OAuth 2.0, and the access token callback returns data like this:
     provider: Github
     version: 2
 
-=head1 Handle Error
+=head1 Error Handler
+
+An error handler should return a response data, it should be an array reference, for be finalized from L<Plack::Response>:
 
     enable 'OAuth', 
         providers => { .... },
         on_error => sub {
-            my ($self,$env,$provider,$config) = @_;
+            my ($self,$oauth_data) = @_;
+
+            # $self: Plack::Middleware::OAuth::Handler (isa Plack::Request) object
 
         };
 
