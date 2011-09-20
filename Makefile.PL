@@ -9,6 +9,7 @@ all_from       'lib/Plack/Middleware/OAuth.pm';
 readme_markdown_from 'lib/Plack/Middleware/OAuth.pm';
 
 requires       
+    'Plack::Session' => 0,
     'File::Spec'  => 0,
     'DateTime' => 0,
     'Digest::MD5' => 0,
