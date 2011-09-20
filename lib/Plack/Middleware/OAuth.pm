@@ -123,39 +123,11 @@ sub request_token_v2 {
 
 sub request_token_v1 { 
 	my ($self,$env,$provider,$config) = @_;
-    $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
-    my $ua = LWP::UserAgent->new;
+    my $req = Plack::Middleware::OAuth::Handler::RequestTokenV2->new( $env );
+    $req->provider( $provider );
+    $req->config( $config );
+    return $req->run();
 
-    # save it , becase we have to built callback URI from ENV.PATH_FINO and ENV.SCRIPT_NAME
-    $config->{callback} ||= $self->build_callback_uri( $provider, $env );
-    my $request = Net::OAuth->request("request token")->new( 
-            %$config,
-
-			request_url => $config->{request_token_url},
-
-			timestamp => DateTime->now->epoch,
-			nonce => md5_hex(time),
-		);
-    $request->sign;
-    my $res = $ua->request(POST $request->to_url); # Post message to the Service Provider
-
-    if ($res->is_success) {
-        my $response = Net::OAuth->response('request token')->from_post_body($res->content);
-
-		# got response token
-		my $uri = URI->new( $config->{authorize_url} );
-		$uri->query_form( oauth_token => $response->token );
-
-		return $self->redirect( $uri );
-        # print "Got Request Token ", $response->token, "\n";
-        # print "Got Request Token Secret ", $response->token_secret, "\n";
-    }
-    else {
-		# failed.
-		my $plack_res = Plack::Response->new(200);
-		$plack_res->body( $res->content );
-        return $plack_res->finalize;
-    }
 }
 
 

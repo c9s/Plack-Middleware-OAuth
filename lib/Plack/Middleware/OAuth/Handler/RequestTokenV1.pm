@@ -18,18 +18,37 @@ sub run {
     my $self = shift;
     my $config = $self->config;
 
-	# "https://www.facebook.com/dialog/oauth?client_id=YOUR_APP_ID&redirect_uri=YOUR_URL";
-	my $uri = URI->new( $config->{authorize_url} );
-    my %query = (
-		client_id     => $config->{client_id},
-		redirect_uri  => $config->{redirect_uri}  || $self->default_callback,
-		response_type => $config->{response_type} || 'code',
-		scope         => $config->{scope},
-    );
-	$uri->query_form( %query );
-	return $self->redirect( $uri );
-}
 
-1;
+    $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
+    my $ua = LWP::UserAgent->new;
+
+    # save it , becase we have to built callback URI from ENV.PATH_FINO and ENV.SCRIPT_NAME
+    $config->{callback} ||= $self->default_callback;
+    my $request = Net::OAuth->request("request token")->new( 
+            %$config,
+
+			request_url => $config->{request_token_url},
+
+			timestamp => DateTime->now->epoch,
+			nonce => md5_hex(time),
+		);
+    $request->sign;
+    my $res = $ua->request(POST $request->to_url); # Post message to the Service Provider
+
+    if ($res->is_success) {
+        my $response = Net::OAuth->response('request token')->from_post_body($res->content);
+
+		# got response token
+		my $uri = URI->new( $config->{authorize_url} );
+		$uri->query_form( oauth_token => $response->token );
+
+		return $self->redirect( $uri );
+        # print "Got Request Token ", $response->token, "\n";
+        # print "Got Request Token Secret ", $response->token_secret, "\n";
+    }
+
+	# failed.
+	return $self->render( $res->content );
+}
 
 1;
