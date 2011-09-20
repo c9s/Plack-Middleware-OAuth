@@ -1,55 +1,103 @@
-package GenericRequestHandler;
-use parent qw(Plack::Request);
-use YAML::Any;
-use JSON::Any;
+package Plack::Middleware::OAuth::Handler::AccessToken::V2;
+use parent qw(Plack::Middleware::OAuth::Handler);
+use Class::Accessor::Fast qw(antlers);
 
-our $json_any;
+has config => ( is => "rw" );
 
-sub run { 
-    my $self = $_[0];
-    # get method or post method ?
-    return $self->get if $self->method eq 'GET';
-    return $self->post if $self->method eq 'POST';
+has provider => ( is => "rw" );
+
+sub build_args {
+    my ($self,$provider,$config,$code) = @_;
+	my %args = (
+		client_id     => $config->{client_id},
+		client_secret => $config->{client_secret},
+		redirect_uri  => $config->{redirect_uri} 
+                || $self->build_callback_uri( $provider , $self->env ),
+		scope         => $config->{scope},
+		grant_type    => $config->{grant_type},
+		code          => $code,
+	);
+    return %args;
 }
 
+sub get_access_token {
+    my ($self,$code,%args) = @_;
+	my $uri = URI->new( $config->{access_token_url} );
+    my $ua = LWP::UserAgent->new;
+	my $ua_response;
 
-# get method handler
-sub get {  }
+	my $method = $config->{request_method} || 'GET';
+	if( $method eq 'GET' ) {
+		$uri->query_form( %args );
+		$ua_response = $ua->get( $uri );
+	} 
+	elsif( $method eq 'POST' ) {
+		$ua_response = $ua->post( $uri , \%args );
+	}
 
-# get post handler
-sub post {  }
+    # process response content...
+	my $response_content = $ua_response->content;
+	my $content_type = $ua_response->header('Content-Type');
+	my $oauth_data;
 
-# default content_type
-sub content_type { 'text/html' }
-
-sub to_json { 
-    my ($self, $obj) = @_;
-    $json_any ||= JSON::Any->new;
-    return $self->render( $json_any->encode($obj) , 'text/json' );
+	if( $content_type =~ m{json} || $content_type =~ m{javascript} ) {
+		my $params = decode_json( $response_content );
+		$oauth_data = { 
+			version      => $config->{version},  # oauth version
+			provider     => $provider,
+			params       => $params,
+			code         => $code
+		};
+	} else {
+		my $qq = URI::Query->new( $ua_response->content );
+		my %params = $qq->hash;
+		$oauth_data = { 
+			version      => $config->{version},  # oauth version
+			provider     => $provider,
+			params       => \%params,
+			code         => $code
+		};
+	}
+    return $oauth_data;
 }
-
-sub to_yaml {
-    my ($self, $obj) = @_;
-    return $self->render( Dump( $obj ) , 'text/yaml' );
-}
-
-sub render {
-    my ($self,$body,$content_type) = @_;
-    my $resp = $self->new_response( 200 );
-    $resp->content_type( $content_type || $self->content_type );
-    $resp->body( $body );
-    return $resp->finalize;
-}
-
-package Plack::Middleware::OAuth::Handler::AccessToken;
-use base qw(GenericRequestHandler);
 
 sub run {
+    my $self = $_[0];
+	my $code = $self->param('code');
 
+	# https://graph.facebook.com/oauth/access_token?
+	# 	  client_id=YOUR_APP_ID&redirect_uri=YOUR_URL&
+	# 	  client_secret=YOUR_APP_SECRET&code=THE_CODE_FROM_ABOVE
+	my %args = $self->build_args($code); 
+	my $oauth_data = $self->get_access_token( $code , %args );
+
+    if( $oauth_data->{params}->{error} ) 
+    {
+        # retry ? 
+        # return $self->request_token_v2( $env, $provider, $config);
+    }
+
+	unless( $oauth_data ) {
+        return $self->on_error->( $self, $env, $provider, $config ) if $self->on_error;
+        return $self->_response( 'OAuth failed.' );
+    }
+
+
+    my $session = Plack::Session->new( $env );
+    $session->set( 'oauth2.' . lc($provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
+    $session->set( 'oauth2.' . lc($provider)  . '.code'         , $oauth_data->{code} );
+
+	my $res;
+	$res = $self->on_signin->( $self, $env, $oauth_data ) if $self->on_signin;
+	return $res if $res;
+
+	# for testing
+	return $self->to_yaml( $oauth_data );
 }
 
 package Plack::Middleware::OAuth::Handler::RequestToken;
-use base qw(GenericRequestHandler);
+use parent qw(Plack::Middleware::OAuth::Handler);
+
 sub run {
 
 }
@@ -173,11 +221,6 @@ sub request_token {
 	return $self->request_token_v2( $env, $provider , $config ) if $config->{version} == 2;
 }
 
-
-
-
-
-
 sub request_token_v2 {
 	my ($self,$env,$provider,$config) = @_;
 
@@ -250,98 +293,15 @@ sub access_token {
 }
 
 
-sub _oauth2_build_args {
-    my ($self,$env,$provider,$config,$code) = @_;
-	my %args = (
-		client_id     => $config->{client_id},
-		client_secret => $config->{client_secret},
-		redirect_uri  => $config->{redirect_uri} || $self->build_callback_uri( $provider , $env ),
-		scope         => $config->{scope},
-		grant_type    => $config->{grant_type},
-		code          => $code,
-	);
-    return %args;
-}
-
-sub _oauth2_get_access_token {
-    my ($self,$config,$provider,$code,%args) = @_;
-	my $uri = URI->new( $config->{access_token_url} );
-    my $ua = LWP::UserAgent->new;
-	my $ua_response;
-
-	my $method = $config->{request_method} || 'GET';
-	if( $method eq 'GET' ) {
-		$uri->query_form( %args );
-		$ua_response = $ua->get( $uri );
-	} 
-	elsif( $method eq 'POST' ) {
-		$ua_response = $ua->post( $uri , \%args );
-	}
-
-    # process response content...
-	my $response_content = $ua_response->content;
-	my $content_type = $ua_response->header('Content-Type');
-	my $oauth_data;
-
-	if( $content_type =~ m{json} || $content_type =~ m{javascript} ) {
-		my $params = decode_json( $response_content );
-		$oauth_data = { 
-			version      => $config->{version},  # oauth version
-			provider     => $provider,
-			params       => $params,
-			code         => $code
-		};
-	} else {
-		my $qq = URI::Query->new( $ua_response->content );
-		my %params = $qq->hash;
-		$oauth_data = { 
-			version      => $config->{version},  # oauth version
-			provider     => $provider,
-			params       => \%params,
-			code         => $code
-		};
-	}
-    return $oauth_data;
-}
-
-
-
 sub access_token_v2 {
 	my ($self,$env,$provider,$config) = @_;
 
 	# http://YOUR_URL?code=A_CODE_GENERATED_BY_SERVER
-	my $req = Plack::Request->new($env);
-	my $code = $req->param('code');
+    my $req = Plack::Middleware::Handler::AccessToken::V2->new( $env );
+    $req->set_provider( $provider );
+    $req->set_config( $config );
+    return $req->run;
 
-	# https://graph.facebook.com/oauth/access_token?
-	# 	  client_id=YOUR_APP_ID&redirect_uri=YOUR_URL&
-	# 	  client_secret=YOUR_APP_SECRET&code=THE_CODE_FROM_ABOVE
-
-	my %args = $self->_oauth2_build_args($env,$provider,$config,$code); 
-	my $oauth_data = $self->_oauth2_get_access_token( $config , $provider , $code , %args );
-
-    if( $oauth_data->{params}->{error} ) {  
-        # retry ? 
-        # return $self->request_token_v2( $env, $provider, $config);
-    }
-
-	unless( $oauth_data ) {
-        return $self->on_error->( $self, $env, $provider, $config ) if $self->on_error;
-        return $self->_response( 'OAuth failed.' );
-    }
-
-
-    my $session = Plack::Session->new( $env );
-    $session->set( 'oauth2.' . lc($provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
-    $session->set( 'oauth2.' . lc($provider)  . '.code'         , $oauth_data->{code} );
-
-
-	my $res;
-	$res = $self->on_signin->( $self, $env, $oauth_data ) if $self->on_signin;
-	return $res if $res;
-
-	# for testing
-	return $self->_response( YAML::Dump $oauth_data );
 }
 
 sub access_token_v1 {
