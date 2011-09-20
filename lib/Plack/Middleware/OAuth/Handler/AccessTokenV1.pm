@@ -67,13 +67,12 @@ sub run {
 		},
     };
 
-#     my $session = $env->{'psgix.session'};
-#     # my $session = Plack::Session->new( $env );
-#     $session->set( 'oauth.' . lc($provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
-#     $session->set( 'oauth.' . lc($provider)  . '.access_token_secret' , $oauth_data->{params}->{access_token_secret} );
+    my $session = Plack::Session->new( $env );
+    $session->set( 'oauth.' . lc($self->provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
+    $session->set( 'oauth.' . lc($self->provider)  . '.access_token_secret' , $oauth_data->{params}->{access_token_secret} );
 
 	my $res;
-	$res = $self->on_success->( $self, $env, $oauth_data ) if $self->on_success;
+	$res = $self->on_success->( $self, $oauth_data ) if $self->on_success;
 	return $res if $res;
 
 	return $self->to_yaml( $oauth_data );

@@ -4,7 +4,7 @@ use strict;
 use parent qw(Plack::Middleware);
 use DateTime;
 use Digest::MD5 qw(md5_hex);
-use Plack::Util::Accessor qw(providers on_signin on_error debug);
+use Plack::Util::Accessor qw(providers on_success on_error debug);
 use Plack::Session;
 use Plack::Response;
 use Plack::Request;
@@ -145,8 +145,8 @@ sub access_token {
     }
 
     my $req = $class->new( $env );
-    $req->on_success(sub {  });
-    $req->on_error(sub {  });
+    $req->on_success( $self->on_success );
+    $req->on_error( $self->on_error );
     $req->provider( $provider );
     $req->config( $config );
     return $req->run();
@@ -184,9 +184,16 @@ For more details, please check the example psgi in F<eg/> directory.
         mount '/oauth' => builder {
             enable 'OAuth', 
 
-                on_signin => sub  { 
-                    my ($self,$env,$oauth_data) = @_;
+                on_success => sub  { 
+                    my ($self,$oauth_data) = @_;
+                    my $env = $self->env;
+
+                    return $self->render( '..html content..' );
+                    return $self->redirect( .... URL ... );
+
                     return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
+
+
                 },
 
                 on_error => sub {  ...  },
@@ -254,16 +261,21 @@ You can get OAuth1 or OAuth2 access token from Session,
     $session->get( 'oauth2.facebook.access_token' );
     $session->get( 'oauth2.custom_provider' );
 
-=head1 Specify Signin Callback
+=head1 Specify Success Callback
+
+When access token is got, success handler will be called: 
 
     enable 'OAuth', 
         providers => { .... },
-        on_signin => sub  { 
-            my ($self,$env,$oauth_data) = @_;
+        on_success => sub  { 
+            my ($self,$oauth_data) = @_;
+
+            # $self: Plack::Request object
+
             return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
         };
 
-Without specifying C<on_signin>, OAuth middleware will use YAML to dump the response data to page.
+Without specifying C<on_success>, OAuth middleware will use YAML to dump the response data to page.
 
 =head1 OAuth1 AccessToken Callback Data Structure
 

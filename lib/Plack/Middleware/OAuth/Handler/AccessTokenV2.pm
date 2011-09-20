@@ -77,20 +77,18 @@ sub run {
 
     if( $oauth_data->{params}->{error} ) 
     {
-        # retry ? 
-        # return $self->request_token_v2( $env, $provider, $config);
+		$self->on_error->( $self, $oauth_data ) if $self->on_error;
     }
 
 	unless( $oauth_data ) {
         return $self->on_error->( $self ) if $self->on_error;
-        return $self->_response( 'OAuth failed.' );
+        return $self->render( 'OAuth failed.' );
     }
 
-
-#     my $session = $env->{'psgix.session'};
-#     # my $session = Plack::Session->new( $env );
-#     $session->set( 'oauth2.' . lc($provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
-#     $session->set( 'oauth2.' . lc($provider)  . '.code'         , $oauth_data->{code} );
+	# register oauth args to session
+    my $session = Plack::Session->new( $env );
+    $session->set( 'oauth2.' . lc($self->provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
+    $session->set( 'oauth2.' . lc($self->provider)  . '.code'         , $oauth_data->{params}->{code} );
 
 	my $res;
 	$res = $self->on_success->( $self, $oauth_data ) if $self->on_success;
