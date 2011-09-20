@@ -25,6 +25,15 @@ our $VERSION = '0.03';
 #    path => { provider => ... , method => .... }
 our %routes;
 
+
+sub version1_required {
+    qw(consumer_key consumer_secret request_token_url access_token_url request_token_method access_token_method signature_method);
+}
+
+sub version2_required {
+    qw(client_id client_secret authorize_url access_token_url);
+}
+
 sub prepare_app {
 	my $self = shift;
 	my $p = $self->providers;
@@ -46,13 +55,13 @@ sub prepare_app {
 
 		# version 1 checking
 		if( $config->{version} == 1 ) {
-			for( qw(consumer_key consumer_secret request_token_url access_token_url request_token_method access_token_method signature_method) ) 
+			for( $self->version1_required ) 
 			{
 				die "Please setup $_ for $provider_name" unless $config->{$_};
 			}
 		}
 		elsif( $config->{version} == 2 ) {
-			for( qw(client_id client_secret authorize_url access_token_url) ) {
+			for( $self->version2_required ) {
 				die "Please setup $_ for $provider_name" unless $config->{$_};
 			}
 		}
