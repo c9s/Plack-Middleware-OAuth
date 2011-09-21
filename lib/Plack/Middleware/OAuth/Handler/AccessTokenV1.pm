@@ -42,9 +42,6 @@ sub run {
         oauth_verifier => $self->param('oauth_verifier'),
     });
 
-	warn $response->token;
-	warn $self->param('oauth_token');
-
     my $request = Net::OAuth->request( 'access token' )->new( $self->build_args );
     $request->sign;
 
