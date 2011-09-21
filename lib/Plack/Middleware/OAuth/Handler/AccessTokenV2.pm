@@ -3,6 +3,9 @@ use parent qw(Plack::Middleware::OAuth::Handler);
 use URI;
 use URI::Query;
 use LWP::UserAgent;
+use JSON::Any;
+use warnings;
+use strict;
 
 sub build_args {
     my ($self,$code) = @_;
@@ -41,7 +44,7 @@ sub get_access_token {
 	my $oauth_data;
 
 	if( $content_type =~ m{json} || $content_type =~ m{javascript} ) {
-		my $params = decode_json( $response_content );
+		my $params = JSON::Any->new->decode( $response_content );
 		$oauth_data = { 
 			version      => $config->{version},  # oauth version
 			provider     => $provider,
@@ -86,9 +89,13 @@ sub run {
     }
 
 	# register oauth args to session
+    my $env = $self->env;
+    my $provider = $self->provider;
     my $session = Plack::Session->new( $env );
     $session->set( 'oauth2.' . lc($self->provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
     $session->set( 'oauth2.' . lc($self->provider)  . '.code'         , $oauth_data->{params}->{code} );
+    $session->set( 'oauth2.' . lc($self->provider)  . '.token_type'         , $oauth_data->{params}->{token_type} );
+    $session->set( 'oauth2.' . lc($self->provider)  . '.refresh_token'         , $oauth_data->{params}->{refresh_token} );
 
 	my $res;
 	$res = $self->on_success->( $self, $oauth_data ) if $self->on_success;

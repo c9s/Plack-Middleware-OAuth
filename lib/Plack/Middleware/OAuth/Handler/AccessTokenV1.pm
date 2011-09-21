@@ -1,5 +1,7 @@
 package Plack::Middleware::OAuth::Handler::AccessTokenV1;
 use parent qw(Plack::Middleware::OAuth::Handler);
+use warnings;
+use strict;
 use URI;
 use URI::Query;
 use LWP::UserAgent;

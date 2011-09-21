@@ -323,6 +323,18 @@ Github uses OAuth 2.0, and the access token callback returns data like this:
     provider: Github
     version: 2
 
+Google returns:
+
+    ---
+    params:
+        access_token: {{string}}
+        code: {{string}}
+        expires_in: 3600
+        refresh_token: {{string}}
+        token_type: Bearer
+    provider: Google
+    version: 2
+
 =head1 Supported Providers
 
 =for 4
