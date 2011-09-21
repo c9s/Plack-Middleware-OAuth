@@ -10,20 +10,27 @@ our $json_any;
 sub run { 
     my $self = $_[0];
     # get method or post method ?
-    return $self->get if $self->method eq 'GET';
-    return $self->post if $self->method eq 'POST';
+    my $res;
+    $res = $self->get if $self->method eq 'GET';
+    return $res if $res;
+
+    $res = $self->post if $self->method eq 'POST';
+    return $res if $res;
+
+    $res = $self->any;
+    return $res if $res;
+
+    return $self->render( ref($self) . ': handler is not defined.' );
 }
 
 
 # get method handler
-sub get { 
-    return $_[0]->render( ref($_[0]) . ': GET handler is not defined.' );
-}
+sub get { }
 
 # get post handler
-sub post { 
-    return $_[0]->render( ref($_[0]) . ': POST handler is not defined.' );
-}
+sub post { }
+
+sub any { }
 
 # default content_type
 sub content_type { 'text/html' }
@@ -55,3 +62,41 @@ sub redirect {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+Plack::Middleware::OAuth::GenericHandler - 
+
+=head1 DESCRIPTION
+
+=head1 SYNOPSIS
+
+
+=head1 METHODS
+
+=head2 redirect( $URI | String )
+
+=head2 render( $body | String , $content_type | String )
+
+=head2 to_yaml( $obj )
+
+=head2 to_json( $obj )
+
+=head2 post 
+
+POST handler, abstract method.
+
+=head2 get
+
+GET handler, abstract method.
+
+=head2 any
+
+Any handler, abstract method.
+
+=head2 run
+
+dispatcher method to POST or GET
+
+=cut
