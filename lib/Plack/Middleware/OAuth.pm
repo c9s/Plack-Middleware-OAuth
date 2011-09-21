@@ -248,19 +248,6 @@ For more details, please check the example psgi in F<eg/> directory.
 The callback/redirect URL is set to {SCHEMA}://{HTTP_HOST}/{prefix}/{provider}/callback by default.
 
 
-
-
-=head1 Sessions
-
-You can get OAuth1 or OAuth2 access token from Session,
-
-    my $session = Plack::Session->new( $env );
-    $session->get( 'oauth.twitter.access_token' );
-    $session->get( 'oauth.twitter.access_token_secret' );
-
-    $session->get( 'oauth2.facebook.access_token' );
-    $session->get( 'oauth2.custom_provider' );
-
 =head1 Specify Success Callback
 
 When access token is got, success handler will be called: 
@@ -366,6 +353,18 @@ Google returns:
         token_type: Bearer
     provider: Google
     version: 2
+
+=head1 Sessions
+
+You can get OAuth1 or OAuth2 access token from Session,
+
+    my $session = Plack::Session->new( $env );
+    $session->get( 'oauth.twitter.access_token' );
+    $session->get( 'oauth.twitter.access_token_secret' );
+
+    $session->get( 'oauth2.facebook.access_token' );
+    $session->get( 'oauth2.custom_provider' );
+
 
 =head1 Supported Providers
 
