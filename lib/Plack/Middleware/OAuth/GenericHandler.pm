@@ -16,10 +16,14 @@ sub run {
 
 
 # get method handler
-sub get {  }
+sub get { 
+    return $_[0]->render( ref($_[0]) . ': GET handler is not defined.' );
+}
 
 # get post handler
-sub post {  }
+sub post { 
+    return $_[0]->render( ref($_[0]) . ': POST handler is not defined.' );
+}
 
 # default content_type
 sub content_type { 'text/html' }

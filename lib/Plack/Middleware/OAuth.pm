@@ -114,7 +114,6 @@ sub call {
 	return $res;
 }
 
-
 sub request_token {
 	my ($self,$env,$provider) = @_;  # env and provider id
 	my $config = $self->providers->{ $provider };

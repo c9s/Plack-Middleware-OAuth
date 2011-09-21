@@ -12,14 +12,13 @@ my $app = sub {
 builder {
     mount '/oauth' => builder {
         enable 'OAuth', 
-            signin => sub {
-                my ( $self, $env, $oauth_data ) = @_;
+            on_success => sub {
+                my ( $self, $oauth_data ) = @_;
 
-                # find user
-
-                # update user auth
-
-                return 0;
+                $self->render( 'Success' );
+                $self->to_json( $oauth_data );
+                $self->to_yaml( $oauth_data );
+                $self->redirect( '/another_path' );
             },
             providers => 
             {
