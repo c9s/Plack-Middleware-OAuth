@@ -1,0 +1,16 @@
+---
+Facebook:
+  client_id: 
+  client_secret: 
+  scope: 'email,read_stream'
+Github:
+  client_id: 
+  client_secret: 
+  scope: 'user,public_repo'
+Google:
+  client_id: 
+  client_secret: 
+  scope: https://www.google.com/m8/feeds/
+Twitter:
+  consumer_key: 
+  consumer_secret: 

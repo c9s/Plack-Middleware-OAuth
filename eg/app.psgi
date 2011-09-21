@@ -20,6 +20,8 @@ builder {
                 $self->to_yaml( $oauth_data );
                 $self->redirect( '/another_path' );
             },
+
+            # providers => 'eg/providers.yml',  # this also works
             providers => 
             {
                 'Twitter' => {
