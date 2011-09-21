@@ -81,7 +81,3 @@ sub run {
 }
 
 1;
-use warnings;
-use strict;
-
-1;
