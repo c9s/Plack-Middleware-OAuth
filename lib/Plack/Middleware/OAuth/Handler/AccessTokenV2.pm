@@ -3,6 +3,7 @@ use parent qw(Plack::Middleware::OAuth::Handler);
 use URI;
 use URI::Query;
 use LWP::UserAgent;
+use Plack::Middleware::OAuth::AccessToken;
 use JSON::Any;
 use warnings;
 use strict;
@@ -41,31 +42,33 @@ sub get_access_token {
     # process response content...
 	my $response_content = $ua_response->content;
 	my $content_type     = $ua_response->header('Content-Type');
-	my $oauth_data;
+	my $atkn;
 
 	if( $content_type =~ m{json} || $content_type =~ m{javascript} ) {
+
 		my $params = JSON::Any->new->decode( $response_content );
-		$oauth_data = { 
+        $atkn = Plack::Middleware::OAuth::AccessToken->new(
 			version      => $config->{version},  # oauth version
 			provider     => $provider,
 			params       => {
 				%$params,
 				code => $code,
 			}
-		};
+        );
+
 	} else {
 		my $qq = URI::Query->new( $ua_response->content );
 		my %params = $qq->hash;
-		$oauth_data = { 
+        $atkn = Plack::Middleware::OAuth::AccessToken->new(
 			version      => $config->{version},  # oauth version
 			provider     => $provider,
 			params       => { 
 				%params,
 				code => $code
 			}
-		};
+		);
 	}
-    return $oauth_data;
+    return $atkn;
 }
 
 sub run {
@@ -76,14 +79,13 @@ sub run {
 	# 	  client_id=YOUR_APP_ID&redirect_uri=YOUR_URL&
 	# 	  client_secret=YOUR_APP_SECRET&code=THE_CODE_FROM_ABOVE
 	my %args = $self->build_args($code); 
-	my $oauth_data = $self->get_access_token( $code , %args );
+	my $token = $self->get_access_token( $code , %args );
 
-    if( $oauth_data->{params}->{error} ) 
-    {
-		$self->on_error->( $self, $oauth_data ) if $self->on_error;
+    if( $token->has_error ) {
+		$self->on_error->( $self, $token ) if $self->on_error;
     }
 
-	unless( $oauth_data ) {
+	unless( $token ) {
         return $self->on_error->( $self ) if $self->on_error;
         return $self->render( 'OAuth failed.' );
     }
@@ -91,18 +93,15 @@ sub run {
 	# register oauth args to session
     my $env = $self->env;
     my $provider = $self->provider;
-    my $session = Plack::Session->new( $env );
-    $session->set( 'oauth2.' . lc($self->provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
-    $session->set( 'oauth2.' . lc($self->provider)  . '.code'         , $oauth_data->{params}->{code} );
-    $session->set( 'oauth2.' . lc($self->provider)  . '.token_type'         , $oauth_data->{params}->{token_type} );
-    $session->set( 'oauth2.' . lc($self->provider)  . '.refresh_token'         , $oauth_data->{params}->{refresh_token} );
+
+    $token->register_session($env);
 
 	my $res;
-	$res = $self->on_success->( $self, $oauth_data ) if $self->on_success;
+	$res = $self->on_success->( $self, $token ) if $self->on_success;
 	return $res if $res;
 
 	# for testing
-	return $self->to_yaml( $oauth_data );
+	return $self->to_yaml( $token );
 }
 
 1;
