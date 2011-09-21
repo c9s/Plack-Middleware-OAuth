@@ -1,5 +1,11 @@
 Revision history for Plack-Middleware-OAuth
 
+
+0.06    三  9/21 13:57:04 2011
+        - More fixes.
+        - GenericHandler refactoring
+        - Fallback response.
+
 0.05    2011-09-22
         - Since JSON::Any, YAML::Any is imported, remove JSON, YAML from dependency.
 
