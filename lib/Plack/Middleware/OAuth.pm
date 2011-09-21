@@ -46,7 +46,6 @@ sub arguments_checking {
     }
 }
 
-
 sub load_config_from_pkg {
     my ($self,$provider_name) = @_;
     my $class = __PACKAGE__ . '::' . $provider_name;
@@ -57,6 +56,16 @@ sub load_config_from_pkg {
 sub prepare_app {
 	my $self = shift;
 	my $p = $self->providers;
+
+    unless( ref($p) ) {
+        if( $p =~ /\.yml$/ ) {
+            use YAML::Any;
+            say STDERR "Loading Provider YAML File: $p";
+            $p = YAML::Any::LoadFile( $p );
+            $self->providers( $p );
+        }
+    }
+
 	for my $provider_name ( keys %$p ) {
 		my $config = $p->{$provider_name};
 
@@ -77,10 +86,10 @@ sub prepare_app {
 		my $path = '/' . lc( $provider_name );
 		my $callback_path = '/' . lc( $provider_name ) . '/callback';
 
-        print STDERR "[OAuth] Mounting $provider_name to $path ...\n";
+        say STDERR "[OAuth] Mounting $provider_name to $path ...";
 		$self->add_route( $path , { provider => $provider_name , method => 'request_token' } );
 
-        print STDERR "[OAuth] Mounting $provider_name callback to $callback_path ...\n";
+        say STDERR "[OAuth] Mounting $provider_name callback to $callback_path ...";
 		$self->add_route( $callback_path , { provider => $provider_name , method => 'access_token' } );
 	}
 }
