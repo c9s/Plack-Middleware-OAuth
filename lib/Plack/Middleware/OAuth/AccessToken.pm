@@ -38,10 +38,10 @@ sub register_session {
     my $session = Plack::Session->new( $env );
     my $provider_id = lc($self->provider);
     if( $self->version == 2 ) {
-        $session->set( 'oauth2.' . $provider_id  . '.access_token' , $self->{params}->{access_token} );
-        $session->set( 'oauth2.' . $provider_id  . '.code'         , $self->{params}->{code} );
-        $session->set( 'oauth2.' . $provider_id  . '.token_type'         , $self->{params}->{token_type} );
-        $session->set( 'oauth2.' . $provider_id  . '.refresh_token'         , $self->{params}->{refresh_token} );
+        $session->set( 'oauth2.' . $provider_id  . '.access_token'  , $self->{params}->{access_token} );
+        $session->set( 'oauth2.' . $provider_id  . '.code'          , $self->{params}->{code} );
+        $session->set( 'oauth2.' . $provider_id  . '.token_type'    , $self->{params}->{token_type} );
+        $session->set( 'oauth2.' . $provider_id  . '.refresh_token' , $self->{params}->{refresh_token} );
     } 
     elsif( $self->version == 1 ) {
         $session->set( 'oauth.' . $provider_id . '.access_token' , $self->{params}->{access_token} );
