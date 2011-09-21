@@ -14,18 +14,26 @@ sub new {
     return bless \%args , $class;
 }
 
+sub is_provider {
+    return $_[0]->provider eq $_[1];
+}
+
 sub has_error {
     my $self = shift;
     return $self->{params}->{error};
 }
 
 sub extra_params { 
+    my $self = shift;
     return $self->{params}->{extra_params};
 }
 
 sub access_token {
-    my $self = shift;
-    return $self->{params}->{access_token};
+    return $_[0]->{params}->{access_token};
+}
+
+sub access_token_secret {
+    return $_[0]->{params}->{access_token_secret};
 }
 
 sub hashref {

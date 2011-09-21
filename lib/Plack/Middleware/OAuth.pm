@@ -182,8 +182,11 @@ For more details, please check the example psgi in F<eg/> directory.
             enable 'OAuth', 
 
                 on_success => sub  { 
-                    my ($self,$oauth_data) = @_;
+                    my ($self,$token) = @_;
                     my $env = $self->env;
+
+                    my $config = $self->config;   # provider config
+
 
                     return $self->render( '..html content..' );
                     return $self->redirect( .... URL ... );
@@ -265,7 +268,7 @@ When access token is got, success handler will be called:
     enable 'OAuth', 
         providers => { .... },
         on_success => sub  { 
-            my ($self,$oauth_data) = @_;
+            my ($self,$token) = @_;
 
             # $self: Plack::Middleware::OAuth::Handler (isa Plack::Request) object
 
@@ -283,6 +286,33 @@ When access token is got, success handler will be called:
 
 Without specifying C<on_success>, OAuth middleware will use YAML to dump the response data to page.
 
+To use access token to get user information, the following example demonstracte how to get corresponding user information:
+
+    on_success => sub {
+        my ($self,$token) = @_;
+
+        if( $token->is_provider('Twitter') ) {
+            my $config = $self->config;
+
+            # return $self->to_yaml( $config );
+
+            # get twitter user infomation with (api)
+            my $twitter = Net::Twitter->new(
+                traits              => [qw/OAuth API::REST/],
+                consumer_key        => $config->{consumer_key},
+                consumer_secret     => $config->{consumer_secret},
+                access_token        => $token->access_token,
+                access_token_secret => $token->access_token_secret,
+            );
+
+            return $self->to_yaml( { 
+                account_settings => $twitter->account_settings,
+                account_totals => $twitter->account_totals,
+                show_user => $twitter->show_user( $token->params->{extra_params}->{screen_name} )
+            } );
+        }
+    }
+
 =head1 Error Handler
 
 An error handler should return a response data, it should be an array reference, for be finalized from L<Plack::Response>:
@@ -290,7 +320,9 @@ An error handler should return a response data, it should be an array reference,
     enable 'OAuth', 
         providers => { .... },
         on_error => sub {
-            my ($self,$oauth_data) = @_;
+            my ($self,$token) = @_;
+
+            $self->render( 'Error' ) unless $token;
 
             # $self: Plack::Middleware::OAuth::Handler (isa Plack::Request) object
 
