@@ -207,12 +207,11 @@ For more details, please check the example psgi in F<eg/> directory.
 
                 on_error => sub {  ...  },
 
+                providers => 'providers.yml',   # also works
+
                 providers => {
 
                     # capital case implies Plack::Middleware::OAuth::Twitter
-                    # authorize path: /oauth/twitter
-                    # authorize callback path: /oauth/twitter/callback
-
                     'Twitter' =>
                     {
                         consumer_key      => ...
@@ -220,9 +219,6 @@ For more details, please check the example psgi in F<eg/> directory.
                     },
 
                     # captical case implies Plack::Middleware::OAuth::Facebook
-                    # authorize path: /oauth/facebook
-                    # authorize callback path: /oauth/facebook/callback
-
                     'Facebook' =>
                     {
                         client_id        => ...
@@ -243,8 +239,6 @@ For more details, please check the example psgi in F<eg/> directory.
                         scope         => 'https://www.google.com/m8/feeds/'
                     },
 
-                    # authorize path: /oauth/custom_provider
-                    # authorize callback path: /oauth/custom_provider/callback
                     'custom_provider' => { 
                         version => 1,
                         ....
@@ -256,6 +250,27 @@ For more details, please check the example psgi in F<eg/> directory.
 
 The callback/redirect URL is set to {SCHEMA}://{HTTP_HOST}/{prefix}/{provider}/callback by default.
 
+=head1 OAuth URL and Callback URL
+
+For a defined key in providers hashref, and you mounted OAuth middleware at F</oauth>, 
+the generated URLs will be like:
+
+    authorize path: /oauth/custom_provider
+    authorize callback path: /oauth/custom_provider/callback
+
+The provider id (key) will be converted into lower-case.
+
+For example, Github's URLs will be like:
+
+    /oauth/github
+    /oauth/github/callback
+
+Facebook,
+
+    /oauth/facebook
+    /oauth/facebook/callback
+
+You can also specify custom callback URL in a provider config.
 
 =head1 Specify Success Callback
 
