@@ -15,8 +15,6 @@ use Plack::Middleware::OAuth::Handler::RequestTokenV2;
 use Plack::Middleware::OAuth::Handler::AccessTokenV1;
 use Plack::Middleware::OAuth::Handler::AccessTokenV2;
 use DateTime;
-use YAML;
-use JSON;
 use feature qw(switch say);
 
 our $VERSION = '0.04';
@@ -286,6 +284,19 @@ When access token is got, success handler will be called:
 
 Without specifying C<on_success>, OAuth middleware will use YAML to dump the response data to page.
 
+=head1 Error Handler
+
+An error handler should return a response data, it should be an array reference, for be finalized from L<Plack::Response>:
+
+    enable 'OAuth', 
+        providers => { .... },
+        on_error => sub {
+            my ($self,$oauth_data) = @_;
+
+            # $self: Plack::Middleware::OAuth::Handler (isa Plack::Request) object
+
+        };
+
 =head1 OAuth1 AccessToken Callback Data Structure
 
 Twitter uses OAuth 1.0a, and the access token callback returns data like this:
@@ -312,19 +323,6 @@ Github uses OAuth 2.0, and the access token callback returns data like this:
         token_type: bearer
     provider: Github
     version: 2
-
-=head1 Error Handler
-
-An error handler should return a response data, it should be an array reference, for be finalized from L<Plack::Response>:
-
-    enable 'OAuth', 
-        providers => { .... },
-        on_error => sub {
-            my ($self,$oauth_data) = @_;
-
-            # $self: Plack::Middleware::OAuth::Handler (isa Plack::Request) object
-
-        };
 
 =head1 Supported Providers
 
