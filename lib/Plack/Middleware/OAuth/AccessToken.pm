@@ -36,6 +36,10 @@ sub access_token_secret {
     return $_[0]->{params}->{access_token_secret};
 }
 
+sub code { 
+    return $_[0]->{params}->{code};
+}
+
 sub hashref {
     my $self = shift;
     return \%$self;
