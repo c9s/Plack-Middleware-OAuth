@@ -12,14 +12,19 @@ sub new {
 # config: provider config hashref
 # token:  access token object
 
+sub create_inf {
+    my ($self,$class) = @_;
+    return $class->new( token => $self->token , config => $self->config );
+}
+
 sub ask {
     my ($self,$provider_name) = @_;
     if( $provider_name =~ m/^\+/ ) {
         my $info_class = Plack::Util::load_class( $provider_name );
-        return $info_class->new( token => $self->token , config => $self->config )->query;
+        return $self->create_inf( $info_class )->query;
     } else {
         my $info_class = Plack::Util::load_class( $provider_name , __PACKAGE__ );
-        return $info_class->new( token => $self->token , config => $self->config )->query;
+        return $self->create_inf( $info_class )->query;
     }
 }
 
@@ -48,5 +53,18 @@ Plack::Middleware::OAuth::UserInfo
 
 In the customized user info query class should implement query method for querying user info.
 
-=cut
+=head1 FUNCTIONS
 
+=head2 create_inf( interface_class | string )
+
+Create a new Interface with current token and OAuth provider config.
+
+Returns interface object.
+
+=head2 ask( provider_name | string )
+
+Create a new query interface object and ask for user infomation.
+
+Returns hashref.
+
+=cut
