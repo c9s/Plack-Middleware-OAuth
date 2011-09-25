@@ -1,6 +1,9 @@
 Revision history for Plack-Middleware-OAuth
 
 
+0.07    日  9/25 16:33:32 2011
+        - Add UserInfo query interface.
+
 0.06    三  9/21 13:57:04 2011
         - More fixes.
         - GenericHandler refactoring
