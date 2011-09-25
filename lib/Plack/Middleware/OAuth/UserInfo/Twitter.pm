@@ -22,12 +22,6 @@ sub query {
 #   account_settings => $twitter->account_settings,
 #   account_totals => $twitter->account_totals,
     return $twitter->show_user( $self->token->params->{extra_params}->{screen_name} )
-#     return $self->to_yaml( { 
-#         account_settings => $twitter->account_settings,
-#         account_totals => $twitter->account_totals,
-#         show_user => $twitter->show_user( $token->params->{extra_params}->{screen_name} )
-#     } );
-    
 }
 
 1;
