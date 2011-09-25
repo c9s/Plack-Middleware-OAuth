@@ -10,6 +10,7 @@ use Plack::Response;
 use Plack::Request;
 use URI;
 use URI::Query;
+use Plack::Middleware::OAuth::UserInfo;
 use Plack::Middleware::OAuth::Handler::RequestTokenV1;
 use Plack::Middleware::OAuth::Handler::RequestTokenV2;
 use Plack::Middleware::OAuth::Handler::AccessTokenV1;

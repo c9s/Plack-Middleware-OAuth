@@ -4,6 +4,7 @@ use lib 'lib';
 
 BEGIN {
     use_ok( 'Plack::Middleware::OAuth' ) || print "Bail out!\n";
+    use_ok( 'Plack::Middleware::OAuth::UserInfo' );
     use_ok( 'Plack::Middleware::OAuth::Handler' );
     use_ok( 'Plack::Middleware::OAuth::GenericHandler' );
     use_ok( 'Plack::Middleware::OAuth::Handler::RequestTokenV1' );
