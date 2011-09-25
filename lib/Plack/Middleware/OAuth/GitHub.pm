@@ -1,4 +1,4 @@
-package Plack::Middleware::OAuth::Github;
+package Plack::Middleware::OAuth::GitHub;
 use warnings;
 use strict;
 

@@ -3,7 +3,7 @@ Facebook:
   client_id: 
   client_secret: 
   scope: 'email,read_stream'
-Github:
+GitHub:
   client_id: 
   client_secret: 
   scope: 'user,public_repo'

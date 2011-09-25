@@ -48,7 +48,7 @@ Plack::Middleware::OAuth::UserInfo
     );
 
     my $info_hash = $userinfo->ask( 'Twitter' );   # load Plack::Middleware::OAuth::UserInfo::Twitter
-    my $info_hash = $userinfo->ask( 'Github' );    # load Plack::Middleware::OAuth::UserInfo::GitHub
+    my $info_hash = $userinfo->ask( 'GitHub' );    # load Plack::Middleware::OAuth::UserInfo::GitHub
     my $info_hash = $userinfo->ask( '+FullQualified::CustomUserInfoQuery' );
 
 In the customized user info query class should implement query method for querying user info.

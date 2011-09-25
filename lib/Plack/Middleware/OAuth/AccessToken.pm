@@ -23,11 +23,6 @@ sub has_error {
     return $self->{params}->{error};
 }
 
-sub extra_params { 
-    my $self = shift;
-    return $self->{params}->{extra_params};
-}
-
 sub access_token {
     return $_[0]->{params}->{access_token};
 }
@@ -43,6 +38,11 @@ sub code {
 sub hashref {
     my $self = shift;
     return \%$self;
+}
+
+sub extra {
+    my $self = shift;
+    return $self->{params}->{extra}
 }
 
 sub register_session {

@@ -170,7 +170,7 @@ Plack::Middleware::OAuth - Plack middleware for OAuth1, OAuth2 and builtin provi
 
 This module is still in B<**BETA**> , B<DO NOT USE THIS FOR PRODUCTION!>
 
-L<Plack::Middleware::OAuth> supports OAuth1 and OAuth2, and provides builtin config for providers like Twitter, Github, Google, Facebook.
+L<Plack::Middleware::OAuth> supports OAuth1 and OAuth2, and provides builtin config for providers like Twitter, GitHub, Google, Facebook.
 The only one thing you need to mount your OAuth service is to setup your C<consumer_key>, C<consumer_secret> (for OAuth1) or C<client_id>, C<client_secret>, C<scope> (for OAuth2).
 
 This middleware also generates authorize url (mount_path/provider_id) and auththorize callback url (mount_path/provider_id/callback). 
@@ -227,7 +227,7 @@ For more details, please check the example psgi in F<eg/> directory.
                         scope            => 'email,read_stream',
                     },
 
-                    'Github' => 
+                    'GitHub' => 
                     {
                         client_id => ...
                         client_secret => ...
@@ -261,7 +261,7 @@ the generated URLs will be like:
 
 The provider id (key) will be converted into lower-case.
 
-For example, Github's URLs will be like:
+For example, GitHub's URLs will be like:
 
     /oauth/github
     /oauth/github/callback
@@ -381,14 +381,14 @@ Twitter uses OAuth 1.0a, and the access token callback returns data like this:
 
 =head1 OAuth2 AccessToken Callback Data Structure
 
-Github uses OAuth 2.0, and the access token callback returns data like this:
+GitHub uses OAuth 2.0, and the access token callback returns data like this:
 
     ---
     params:
         code: {{string}}
         access_token: {{string}}
         token_type: bearer
-    provider: Github
+    provider: GitHub
     version: 2
 
 Google returns:
@@ -433,7 +433,7 @@ Facebook
 
 =item
 
-Github
+GitHub
 
 =back
 
@@ -457,7 +457,7 @@ L<http://tools.ietf.org/html/draft-ietf-oauth-v2>
 
 =item *
 
-Github - Create A New Client
+GitHub - Create A New Client
 L<https://github.com/account/applications>
 
 =item *

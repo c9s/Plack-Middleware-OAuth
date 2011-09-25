@@ -1,4 +1,4 @@
-package Plack::Middleware::OAuth::UserInfo::Github;
+package Plack::Middleware::OAuth::UserInfo::GitHub;
 use warnings;
 use strict;
 use parent qw(Plack::Middleware::OAuth::UserInfo);
