@@ -10,18 +10,19 @@ lib/Plack/Middleware/OAuth/Facebook.pm
 lib/Plack/Middleware/OAuth/GenericHandler.pm
 lib/Plack/Middleware/OAuth/GitHub.pm
 lib/Plack/Middleware/OAuth/Google.pm
-lib/Plack/Middleware/OAuth/Twitter.pm
 lib/Plack/Middleware/OAuth/Handler.pm
 lib/Plack/Middleware/OAuth/Handler/AccessTokenV1.pm
 lib/Plack/Middleware/OAuth/Handler/AccessTokenV2.pm
 lib/Plack/Middleware/OAuth/Handler/RequestTokenV1.pm
 lib/Plack/Middleware/OAuth/Handler/RequestTokenV2.pm
+lib/Plack/Middleware/OAuth/Twitter.pm
 lib/Plack/Middleware/OAuth/UserInfo.pm
-lib/Plack/Middleware/OAuth/UserInfo/Twitter.pm
 lib/Plack/Middleware/OAuth/UserInfo/GitHub.pm
 lib/Plack/Middleware/OAuth/UserInfo/Google.pm
-MANIFEST			This list of files
+lib/Plack/Middleware/OAuth/UserInfo/Twitter.pm
+MANIFEST
 MANIFEST.SKIP
+META.yml
 README
 README.mkdn
 t/00-load.t

@@ -4,3 +4,4 @@ eg/app.psgi.dev
 blib/
 private/
 Makefile
+inc/
