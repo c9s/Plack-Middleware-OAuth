@@ -14,21 +14,11 @@ builder {
         enable 'OAuth', 
             on_success => sub {
                 my ( $self, $token ) = @_;
-
                 my $userinfo = Plack::Middleware::OAuth::UserInfo->new( config => $self->config , token => $token );
-                if( $token->is_provider('Twitter') ) {
-                    my $info = $userinfo->ask( 'Twitter' );
+                if( $token->is_provider('Twitter')  || $token->is_provider('Github') || $token->is_provider('Google') ) {
+                    my $info = $userinfo->ask( $token->provider );
                     return $self->to_yaml( $info );
                 }
-                elsif( $token->is_provider('Github') ) {
-                    my $info = $userinfo->ask( 'Github' );
-                    return $self->to_yaml( $info );
-                }
-                elsif( $token->is_provider('Google') ) {
-                    my $info = $userinfo->ask( 'Google' );
-                    return $self->to_yaml( $info );
-                }
-
                 return $self->render( 'Error' );
             },
 

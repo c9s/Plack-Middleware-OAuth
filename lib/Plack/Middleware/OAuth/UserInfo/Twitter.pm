@@ -7,10 +7,8 @@ use Net::Twitter;
 # interface:
 #    query method
 
-sub query {
+sub create_handle { 
     my $self = shift;
-
-    # get twitter user infomation with (api)
     my $twitter = Net::Twitter->new(
         traits              => [qw/OAuth API::REST/],
         consumer_key        => $self->config->{consumer_key},
@@ -18,6 +16,14 @@ sub query {
         access_token        => $self->token->access_token,
         access_token_secret => $self->token->access_token_secret,
     );
+    return $twitter;
+}
+
+sub query {
+    my $self = shift;
+
+    # get twitter user infomation with (api)
+    my $twitter = $self->create_handle;
 
 #   account_settings => $twitter->account_settings,
 #   account_totals => $twitter->account_totals,
