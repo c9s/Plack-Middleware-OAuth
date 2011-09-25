@@ -20,7 +20,8 @@ requires
     'HTTP::Request::Common' => 0,
     'DateTime' => 0,
     'YAML::Any' => 0,
-    'JSON::Any' => 0;
+    'JSON::Any' => 0,
+    'LWP::Protocol::https' => 0;
 
 features 'Twitter Support' => 
     -default => 1,
