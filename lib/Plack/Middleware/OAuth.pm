@@ -405,7 +405,7 @@ Google returns:
 
 =head1 Sessions
 
-You can get OAuth1 or OAuth2 access token from Session,
+You can get OAuth1 or OAuth2 access token from L<Plack::Session>,
 
     my $session = Plack::Session->new( $env );
     $session->get( 'oauth.twitter.access_token' );
