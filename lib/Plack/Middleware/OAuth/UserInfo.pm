@@ -38,8 +38,8 @@ Plack::Middleware::OAuth::UserInfo
 =head1 SYNOPSIS
 
     my $userinfo = Plack::Middleware::OAuth::UserInfo->new( 
-            token => $token , 
-            config => $provider_config
+        token => $token , 
+        config => $provider_config
     );
 
     my $info_hash = $userinfo->ask( 'Twitter' );   # load Plack::Middleware::OAuth::UserInfo::Twitter

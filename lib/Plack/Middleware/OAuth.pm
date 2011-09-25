@@ -273,6 +273,7 @@ Facebook,
 
 You can also specify custom callback URL in a provider config.
 
+
 =head1 Specify Success Callback
 
 When access token is got, success handler will be called: 
@@ -324,6 +325,29 @@ To use access token to get user information, the following example demonstracte 
             } );
         }
     }
+
+=head1 User Info Query Interface
+
+To query user info from OAuth provider, you can use L<Plack::Middleware::OAuth::UserInfo> to help you.
+
+    my $userinfo = Plack::Middleware::OAuth::UserInfo->new( 
+        token =>  $token , 
+        config => $provider_config
+    );
+    my $info_hash = $userinfo->ask( 'Twitter' );   # load Plack::Middleware::OAuth::UserInfo::Twitter
+
+In you oauth success handler, it would be like:
+
+    on_success => sub {
+        my ($self,$token) = @_;
+
+        my $userinfo = Plack::Middleware::OAuth::UserInfo->new( 
+            token =>  $token , 
+            config => $self->config
+        );
+        my $info_hash = $userinfo->ask( 'Twitter' );   # load Plack::Middleware::OAuth::UserInfo::Twitter
+        return $self->to_yaml( $info_hash );
+    };
 
 =head1 Error Handler
 
