@@ -6,7 +6,7 @@ Plack::Middleware::OAuth - Plack middleware for OAuth1, OAuth2 and builtin provi
 
 This module is still in __**BETA**__ , __DO NOT USE THIS FOR PRODUCTION!__
 
-[Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) supports OAuth1 and OAuth2, and provides builtin config for providers like Twitter, Github, Google, Facebook.
+[Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) supports OAuth1 and OAuth2, and provides builtin config for providers like Twitter, GitHub, Google, Facebook.
 The only one thing you need to mount your OAuth service is to setup your `consumer_key`, `consumer_secret` (for OAuth1) or `client_id`, `client_secret`, `scope` (for OAuth2).
 
 This middleware also generates authorize url (mount_path/provider_id) and auththorize callback url (mount_path/provider_id/callback). 
@@ -65,7 +65,7 @@ For more details, please check the example psgi in `eg/` directory.
                         scope            => 'email,read_stream',
                     },
 
-                    'Github' => 
+                    'GitHub' => 
                     {
                         client_id => ...
                         client_secret => ...
@@ -99,7 +99,7 @@ the generated URLs will be like:
 
 The provider id (key) will be converted into lower-case.
 
-For example, Github's URLs will be like:
+For example, GitHub's URLs will be like:
 
     /oauth/github
     /oauth/github/callback
@@ -221,14 +221,14 @@ Twitter uses OAuth 1.0a, and the access token callback returns data like this:
 
 # OAuth2 AccessToken Callback Data Structure
 
-Github uses OAuth 2.0, and the access token callback returns data like this:
+GitHub uses OAuth 2.0, and the access token callback returns data like this:
 
     ---
     params:
         code: {{string}}
         access_token: {{string}}
         token_type: bearer
-    provider: Github
+    provider: GitHub
     version: 2
 
 Google returns:
@@ -261,7 +261,7 @@ You can get OAuth1 or OAuth2 access token from [Plack::Session](http://search.cp
 - Google
 - Twitter
 - Facebook
-- Github
+- GitHub
 
 # See Also
 
@@ -273,7 +273,7 @@ You can get OAuth1 or OAuth2 access token from [Plack::Session](http://search.cp
 [http://hueniverse.com/oauth/guide/workflow/](http://hueniverse.com/oauth/guide/workflow/)
 - OAuth 2.0 Protocal Draft
 [http://tools.ietf.org/html/draft-ietf-oauth-v2](http://tools.ietf.org/html/draft-ietf-oauth-v2)
-- Github - Create A New Client
+- GitHub - Create A New Client
 [https://github.com/account/applications](https://github.com/account/applications)
 - Twitter - Using OAuth 1.0a
 [https://dev.twitter.com/docs/auth/oauth](https://dev.twitter.com/docs/auth/oauth)
