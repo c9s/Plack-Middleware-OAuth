@@ -22,6 +22,14 @@ requires
     'YAML::Any' => 0,
     'JSON::Any' => 0;
 
+features 'Twitter Support' => 
+    -default => 1,
+    'Net::Twitter' => 0;
+
+features 'Github Support' =>
+    -default => 1,
+    'Net::GitHub' => 0;
+
 # test_requires  'Test::More'  => '0.42';
 # recommends     'Text::CSV_XS'=> '0.50';
 # no_index       'directory'   => 'demos';

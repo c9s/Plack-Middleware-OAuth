@@ -4,7 +4,7 @@ Plack::Middleware::OAuth - Plack middleware for OAuth1, OAuth2 and builtin provi
 
 # DESCRIPTION
 
-This module is still in __**ALPHA VERSION**__ , __DO NOT USE THIS FOR PRODUCTION!__
+This module is still in __**BETA**__ , __DO NOT USE THIS FOR PRODUCTION!__
 
 [Plack::Middleware::OAuth](http://search.cpan.org/perldoc?Plack::Middleware::OAuth) supports OAuth1 and OAuth2, and provides builtin config for providers like Twitter, Github, Google, Facebook.
 The only one thing you need to mount your OAuth service is to setup your `consumer_key`, `consumer_secret` (for OAuth1) or `client_id`, `client_secret`, `scope` (for OAuth2).
