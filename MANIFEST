@@ -27,7 +27,6 @@ lib/Plack/Middleware/OAuth/Handler/RequestTokenV2.pm
 lib/Plack/Middleware/OAuth/UserInfo.pm
 lib/Plack/Middleware/OAuth/UserInfo/Twitter.pm
 MANIFEST			This list of files
-MANIFEST.bak
 MANIFEST.SKIP
 META.yml
 MYMETA.json
@@ -42,3 +41,4 @@ t/01-token.t
 t/basic.psgi
 t/manifest.t
 t/pod-coverage.t
+Makefile.PL
