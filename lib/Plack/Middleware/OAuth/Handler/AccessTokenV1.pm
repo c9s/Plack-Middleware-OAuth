@@ -9,6 +9,7 @@ use Net::OAuth;
 use DateTime;
 use Digest::MD5 qw(md5_hex);
 use HTTP::Request::Common;
+use Plack::Middleware::OAuth::AccessToken;
 
 
 sub build_args {
@@ -56,7 +57,7 @@ sub run {
 
     $response = Net::OAuth->response( 'access token' )->from_post_body( $ua_response->content );
 
-    my $oauth_data = +{
+    my $token = Plack::Middleware::OAuth::AccessToken->new( 
 		version             => $config->{version},
 		provider            => $provider,
 		params => {
@@ -64,17 +65,14 @@ sub run {
 			access_token_secret => $response->token_secret,
 			extra_params        => $response->extra_params
 		},
-    };
-
-    my $session = Plack::Session->new( $env );
-    $session->set( 'oauth.' . lc($self->provider)  . '.access_token' , $oauth_data->{params}->{access_token} );
-    $session->set( 'oauth.' . lc($self->provider)  . '.access_token_secret' , $oauth_data->{params}->{access_token_secret} );
+    );
+    $token->register_session( $env );
 
 	my $res;
-	$res = $self->on_success->( $self, $oauth_data ) if $self->on_success;
+	$res = $self->on_success->( $self, $token ) if $self->on_success;
 	return $res if $res;
 
-	return $self->to_yaml( $oauth_data );
+	return $self->to_yaml( $token );
 }
 
 1;

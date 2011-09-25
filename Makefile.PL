@@ -20,7 +20,16 @@ requires
     'HTTP::Request::Common' => 0,
     'DateTime' => 0,
     'YAML::Any' => 0,
-    'JSON::Any' => 0;
+    'JSON::Any' => 0,
+    'LWP::Protocol::https' => 0;
+
+features 'Twitter Support' => 
+    -default => 1,
+    'Net::Twitter' => 0;
+
+features 'Github Support' =>
+    -default => 1,
+    'Net::GitHub' => 0;
 
 # test_requires  'Test::More'  => '0.42';
 # recommends     'Text::CSV_XS'=> '0.50';
