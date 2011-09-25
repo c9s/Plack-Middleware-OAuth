@@ -1,5 +1,8 @@
 Revision history for Plack-Middleware-OAuth
 
+0.08    日  9/25 18:04:12 2011
+        - Add Google/GitHub/Twitter UserInfo query interface for fetching user interface.
+
 0.070, 0.071   日  9/25 16:34:28 2011
         - Add UserInfo query interface.
 
