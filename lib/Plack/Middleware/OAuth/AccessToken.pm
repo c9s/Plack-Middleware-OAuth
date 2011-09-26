@@ -11,6 +11,7 @@ use overload
 
 sub new {
     my ($class,%args) = @_;
+    $args{params} ||= { };
     return bless \%args , $class;
 }
 
@@ -42,7 +43,7 @@ sub hashref {
 
 sub extra {
     my $self = shift;
-    return $self->{params}->{extra}
+    return $self->params->{extra} || { };
 }
 
 sub register_session {
