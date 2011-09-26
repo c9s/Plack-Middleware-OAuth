@@ -16,6 +16,7 @@ sub query {
         'alt'=> 'json',
     );
     my $res = $ua->get($uri);
+    warn $res->decoded_content;
     return JSON::Any->new->decode($res->decoded_content) if $res->is_success;
 }
 
