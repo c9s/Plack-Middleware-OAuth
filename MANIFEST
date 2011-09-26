@@ -20,6 +20,7 @@ lib/Plack/Middleware/OAuth/UserInfo.pm
 lib/Plack/Middleware/OAuth/UserInfo/GitHub.pm
 lib/Plack/Middleware/OAuth/UserInfo/Google.pm
 lib/Plack/Middleware/OAuth/UserInfo/Twitter.pm
+lib/Plack/Middleware/OAuth/UserInfo/Facebook.pm
 MANIFEST
 MANIFEST.SKIP
 META.yml

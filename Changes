@@ -1,5 +1,11 @@
 Revision history for Plack-Middleware-OAuth
 
+0.09    一  9/26 19:36:56 2011
+        - User info query interface bug fixes.
+        - Add Facebook info query interface
+        - Disable Net::GitHub, use LWP::UserAgent class.
+        - Fix extra param hash position.
+
 0.08    日  9/25 18:04:12 2011
         - Add Google/GitHub/Twitter UserInfo query interface for fetching user interface.
 

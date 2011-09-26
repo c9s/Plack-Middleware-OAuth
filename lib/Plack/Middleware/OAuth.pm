@@ -18,7 +18,7 @@ use Plack::Middleware::OAuth::Handler::AccessTokenV2;
 use DateTime;
 use feature qw(switch say);
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 # routes cache
 #    path => { provider => ... , method => .... }
