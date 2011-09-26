@@ -27,7 +27,9 @@ sub query {
 
 #   account_settings => $twitter->account_settings,
 #   account_totals => $twitter->account_totals,
-    return $twitter->show_user( $self->token->params->{extra_params}->{screen_name} )
+    use Data::Dumper; warn Dumper( $self->token->extra );
+
+    return $twitter->show_user( $self->token->extra->{screen_name} )
 }
 
 1;

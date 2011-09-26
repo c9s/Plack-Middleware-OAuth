@@ -63,9 +63,7 @@ sub run {
 		params => {
 			access_token        => $response->token,
 			access_token_secret => $response->token_secret,
-            params => {
-                extra => $response->extra_params
-            }
+            extra               => $response->extra_params
 		},
     );
     $token->register_session( $env );
