@@ -8,11 +8,6 @@ use JSON;
 
 sub create_handle {
     my $self = shift;
-
-
-
-
-
     # return Net::GitHub->new( access_token => $self->token->access_token );
 }
 
@@ -21,13 +16,14 @@ sub query {
     # my $gh = $self->create_handle;
 
     my $ua = LWP::UserAgent->new;
-    my $uri = URI->new( 'http://github.com/api/v2/json/user/show/' );
+    my $uri = URI->new( 'https://github.com/api/v2/json/user/show' );
     $uri->query_form( access_token => $self->token->access_token );
-
     my $response = $ua->get( $uri );
     my $body = $response->decoded_content;
-    return decode_json( $body ) if $body;
-    return { };
+    return unless $body;
+
+    my $obj = decode_json( $body ) || { };
+    return $obj->{user};
 }
 
 1;
