@@ -249,10 +249,15 @@ You can get OAuth1 or OAuth2 access token from [Plack::Session](http://search.cp
 
     my $session = Plack::Session->new( $env );
     $session->get( 'oauth.twitter.access_token' );
-    $session->get( 'oauth.twitter.access_token_secret' );
+    $session->get( 'oauth.twitter.access_token_secret' );  # OAuth version
 
-    $session->get( 'oauth2.facebook.access_token' );
-    $session->get( 'oauth2.custom_provider' );
+    $session->get( 'oauth.facebook.access_token' );
+    $session->get( 'oauth.facebook.version' );   # OAuth version
+
+Custom provider:
+
+    $session->get( 'oauth.custom_provider.access_token' );
+    $session->get( 'oauth.custom_provider.version' );
 
 
 

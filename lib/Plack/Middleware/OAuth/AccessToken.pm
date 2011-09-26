@@ -51,6 +51,7 @@ sub register_session {
     my $session = Plack::Session->new( $env );
     my $provider_id = lc($self->provider);
 
+    $session->set( 'oauth.' . $provider_id  , 1 );
     $session->set( 'oauth.' . $provider_id  . '.version' , $self->version );
     $session->set( 'oauth.' . $provider_id  . '.access_token'  , $self->access_token );
 
