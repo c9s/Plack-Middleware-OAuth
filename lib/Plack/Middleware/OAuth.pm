@@ -18,7 +18,7 @@ use Plack::Middleware::OAuth::Handler::AccessTokenV2;
 use DateTime;
 use feature qw(switch say);
 
-our $VERSION = '0.09';
+our $VERSION = '0.091';
 
 # routes cache
 #    path => { provider => ... , method => .... }
@@ -516,5 +516,9 @@ Google OAuth Scope:
 L<http://code.google.com/apis/gdata/faq.html#AuthScopes>
 
 =back
+
+=head2 Contributors
+
+RsrchBoy
 
 =cut
