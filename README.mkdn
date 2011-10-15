@@ -300,3 +300,7 @@ Custom provider:
 [http://code.google.com/apis/accounts/docs/OAuth2.html](http://code.google.com/apis/accounts/docs/OAuth2.html)
 - Google OAuth Scope:
 [http://code.google.com/apis/gdata/faq.html#AuthScopes](http://code.google.com/apis/gdata/faq.html#AuthScopes)
+
+## Contributors
+
+RsrchBoy

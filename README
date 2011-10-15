@@ -1,55 +1,319 @@
-Plack-Middleware-OAuth
+NAME
+    Plack::Middleware::OAuth - Plack middleware for OAuth1, OAuth2 and
+    builtin provider configs.
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+DESCRIPTION
+    This module is still in **BETA** , DO NOT USE THIS FOR PRODUCTION!
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
+    Plack::Middleware::OAuth supports OAuth1 and OAuth2, and provides
+    builtin config for providers like Twitter, GitHub, Google, Facebook. The
+    only one thing you need to mount your OAuth service is to setup your
+    "consumer_key", "consumer_secret" (for OAuth1) or "client_id",
+    "client_secret", "scope" (for OAuth2).
 
+    This middleware also generates authorize url (mount_path/provider_id)
+    and auththorize callback url (mount_path/provider_id/callback). If the
+    authorize path matches, then user will be redirected to OAuth provider
+    to authorize your application.
 
-INSTALLATION
+    For example, if you mount Plack::Middleware::OAuth on /oauth, then you
+    can access <http://youdomain.com/oauth/twitter> to authorize,
+    Plack::Middleware::OAuth will redirect you to Twitter, after authorized,
+    then Twitter will redirect you to your callback url
+    <http://youdomain.com/oauth/twitter/callback>.
 
-To install this module, run the following commands:
+    For more details, please check the example psgi in eg/ directory.
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+SYNOPSIS
+            use Plack::Builder;
 
-SUPPORT AND DOCUMENTATION
+            builder {
 
-After installing, you can find documentation for this module with the
-perldoc command.
+            mount '/oauth' => builder {
+                enable 'OAuth', 
 
-    perldoc Plack::Middleware::OAuth
+                    on_success => sub  { 
+                        my ($self,$token) = @_;
+                        my $env = $self->env;
 
-You can also look for information at:
-
-    RT, CPAN's request tracker (report bugs here)
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Plack-Middleware-OAuth
-
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Plack-Middleware-OAuth
-
-    CPAN Ratings
-        http://cpanratings.perl.org/d/Plack-Middleware-OAuth
-
-    Search CPAN
-        http://search.cpan.org/dist/Plack-Middleware-OAuth/
+                        my $config = $self->config;   # provider config
 
 
-LICENSE AND COPYRIGHT
+                        return $self->render( '..html content..' );
+                        return $self->redirect( .... URL ... );
 
-Copyright (C) 2011 Yo-An Lin
+                        return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
 
-See http://dev.perl.org/licenses/ for more information.
+                    },
+
+                    on_error => sub {  ...  },
+
+                    providers => 'providers.yml',   # also works
+
+                    providers => {
+
+                        # capital case implies Plack::Middleware::OAuth::Twitter
+                        'Twitter' =>
+                        {
+                            consumer_key      => ...
+                            consumer_secret   => ...
+                        },
+
+                        # captical case implies Plack::Middleware::OAuth::Facebook
+                        'Facebook' =>
+                        {
+                            client_id        => ...
+                            client_secret           => ...
+                            scope            => 'email,read_stream',
+                        },
+
+                        'GitHub' => 
+                        {
+                            client_id => ...
+                            client_secret => ...
+                            scope => 'user,public_repo'
+                        },
+
+                        'Google' =>  { 
+                            client_id     => '',
+                            client_secret => '',
+                            scope         => 'https://www.google.com/m8/feeds/'
+                        },
+
+                        'custom_provider' => { 
+                            version => 1,
+                            ....
+                        }
+                            };
+            };
+                    $app;
+            };
+
+    The callback/redirect URL is set to
+    {SCHEMA}://{HTTP_HOST}/{prefix}/{provider}/callback by default.
+
+OAuth URL and Callback URL
+    For a defined key in providers hashref, and you mounted OAuth middleware
+    at /oauth, the generated URLs will be like:
+
+        authorize path: /oauth/custom_provider
+        authorize callback path: /oauth/custom_provider/callback
+
+    The provider id (key) will be converted into lower-case.
+
+    For example, GitHub's URLs will be like:
+
+        /oauth/github
+        /oauth/github/callback
+
+    Facebook,
+
+        /oauth/facebook
+        /oauth/facebook/callback
+
+    You can also specify custom callback URL in a provider config.
+
+Specify Success Callback
+    When access token is got, success handler will be called:
+
+        enable 'OAuth', 
+            providers => { .... },
+            on_success => sub  { 
+                my ($self,$token) = @_;
+
+                # $self: Plack::Middleware::OAuth::Handler (isa Plack::Request) object
+
+                return $self->render( .... );
+
+                return $self->redirect( .... );
+
+                return $self->to_yaml( .... );
+
+                return $self->to_json( .... );
+
+                # or just return a raw arrayref
+                return [  200 , [ 'Content-type' => 'text/html' ] , 'Signin!' ];
+            };
+
+    Without specifying "on_success", OAuth middleware will use YAML to dump
+    the response data to page.
+
+    To use access token to get user information, the following example
+    demonstracte how to get corresponding user information:
+
+        on_success => sub {
+            my ($self,$token) = @_;
+
+            if( $token->is_provider('Twitter') ) {
+                my $config = $self->config;
+
+                # return $self->to_yaml( $config );
+
+                # get twitter user infomation with (api)
+                my $twitter = Net::Twitter->new(
+                    traits              => [qw/OAuth API::REST/],
+                    consumer_key        => $config->{consumer_key},
+                    consumer_secret     => $config->{consumer_secret},
+                    access_token        => $token->access_token,
+                    access_token_secret => $token->access_token_secret,
+                );
+
+                return $self->to_yaml( { 
+                    account_settings => $twitter->account_settings,
+                    account_totals => $twitter->account_totals,
+                    show_user => $twitter->show_user( $token->params->{extra_params}->{screen_name} )
+                } );
+            }
+        }
+
+User Info Query Interface
+    To query user info from OAuth provider, you can use
+    Plack::Middleware::OAuth::UserInfo to help you.
+
+        my $userinfo = Plack::Middleware::OAuth::UserInfo->new( 
+            token =>  $token , 
+            config => $provider_config
+        );
+        my $info_hash = $userinfo->ask( 'Twitter' );   # load Plack::Middleware::OAuth::UserInfo::Twitter
+
+    In you oauth success handler, it would be like:
+
+        on_success => sub {
+            my ($self,$token) = @_;
+
+            my $userinfo = Plack::Middleware::OAuth::UserInfo->new( 
+                token =>  $token , 
+                config => $self->config
+            );
+            my $info_hash = $userinfo->ask( 'Twitter' );   # load Plack::Middleware::OAuth::UserInfo::Twitter
+            return $self->to_yaml( $info_hash );
+        };
+
+Error Handler
+    An error handler should return a response data, it should be an array
+    reference, for be finalized from Plack::Response:
+
+        enable 'OAuth', 
+            providers => { .... },
+            on_error => sub {
+                my ($self,$token) = @_;
+
+                $self->render( 'Error' ) unless $token;
+
+                # $self: Plack::Middleware::OAuth::Handler (isa Plack::Request) object
+
+            };
+
+OAuth1 AccessToken Callback Data Structure
+    Twitter uses OAuth 1.0a, and the access token callback returns data like
+    this:
+
+        ---
+        params:
+            access_token: {{string}}
+            access_token_secret: {{string}}
+            extra_params:
+                screen_name: {{screen name}}
+                user_id: {{user id}}
+        provider: Twitter
+        version: 1
+
+OAuth2 AccessToken Callback Data Structure
+    GitHub uses OAuth 2.0, and the access token callback returns data like
+    this:
+
+        ---
+        params:
+            code: {{string}}
+            access_token: {{string}}
+            token_type: bearer
+        provider: GitHub
+        version: 2
+
+    Google returns:
+
+        ---
+        params:
+            access_token: {{string}}
+            code: {{string}}
+            expires_in: 3600
+            refresh_token: {{string}}
+            token_type: Bearer
+        provider: Google
+        version: 2
+
+Sessions
+    You can get OAuth1 or OAuth2 access token from Plack::Session,
+
+        my $session = Plack::Session->new( $env );
+        $session->get( 'oauth.twitter.access_token' );
+        $session->get( 'oauth.twitter.access_token_secret' );  # OAuth version
+
+        $session->get( 'oauth.facebook.access_token' );
+        $session->get( 'oauth.facebook.version' );   # OAuth version
+
+    Custom provider:
+
+        $session->get( 'oauth.custom_provider.access_token' );
+        $session->get( 'oauth.custom_provider.version' );
+
+Supported Providers
+    *   Google
+
+    *   Twitter
+
+    *   Facebook
+
+    *   GitHub
+
+See Also
+    Net::OAuth, Net::OAuth2
+
+Reference
+    *   OAuth Workflow <http://hueniverse.com/oauth/guide/workflow/>
+
+    *   OAuth 2.0 Protocal Draft
+        <http://tools.ietf.org/html/draft-ietf-oauth-v2>
+
+    *   GitHub - Create A New Client
+        <https://github.com/account/applications>
+
+    *   Twitter - Using OAuth 1.0a <https://dev.twitter.com/docs/auth/oauth>
+
+    *   Twitter - Moving from Basic Auth to OAuth
+        <https://dev.twitter.com/docs/auth/moving-from-basic-auth-to-oauth>
+
+    *   Single-user OAuth with Examples
+        <https://dev.twitter.com/docs/auth/oauth/single-user-with-examples>
+
+    *   Twitter - Create A New App <https://dev.twitter.com/apps>
+
+    *   Facebook OAuth <http://developers.facebook.com/docs/authentication/>
+
+    *   Facebook - Create A New App <https://developers.facebook.com/apps>
+
+    *   Facebook - Permissions
+        <http://developers.facebook.com/docs/reference/api/permissions/>
+
+    *   Facebook - How to handle expired access_token
+        <https://developers.facebook.com/blog/post/500/>
+
+    *   Google OAuth <http://code.google.com/apis/accounts/docs/OAuth2.html>
+
+    *   Google OAuth Scope:
+        <http://code.google.com/apis/gdata/faq.html#AuthScopes>
+
+  Contributors
+    RsrchBoy
+
+POD ERRORS
+    Hey! The above document had some coding errors, which are explained
+    below:
+
+    Around line 427:
+        '=item' outside of any '=over'
+
+    Around line 453:
+        '=item' outside of any '=over'
 

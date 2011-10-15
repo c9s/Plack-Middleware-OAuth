@@ -1,11 +1,12 @@
-use 5.006;
+#!/usr/bin/env perl
+use inc::Module::Install;
 use strict;
 use warnings;
-use ExtUtils::MakeMaker;
-use inc::Module::Install;
 
 # Define metadata
 all_from       'lib/Plack/Middleware/OAuth.pm';
+
+readme_from    'lib/Plack/Middleware/OAuth.pm';
 readme_markdown_from 'lib/Plack/Middleware/OAuth.pm';
 
 requires       
