@@ -38,10 +38,10 @@ sub run {
     #   oauth_token=
     #   oauth_verifier=
     # my $response = Net::OAuth->response( 'user auth' )->from_hash( request->params );
-    my $response = Net::OAuth->response( 'user auth' )->from_hash( { 
-        oauth_token    => $self->param('oauth_token'),
-        oauth_verifier => $self->param('oauth_verifier'),
-    });
+    # my $response = Net::OAuth->response( 'user auth' )->from_hash( { 
+    #    oauth_token    => $self->param('oauth_token'),
+    #    oauth_verifier => $self->param('oauth_verifier'),
+    # });
 
     my $request = Net::OAuth->request( 'access token' )->new( $self->build_args );
     $request->sign;
@@ -55,7 +55,7 @@ sub run {
     }
 
 
-    $response = Net::OAuth->response( 'access token' )->from_post_body( $ua_response->content );
+    my $response = Net::OAuth->response( 'access token' )->from_post_body( $ua_response->content );
 
     my $token = Plack::Middleware::OAuth::AccessToken->new( 
 		version             => $config->{version},
