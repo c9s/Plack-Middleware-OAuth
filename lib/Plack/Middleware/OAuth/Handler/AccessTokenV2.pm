@@ -4,6 +4,7 @@ use URI;
 use URI::Query;
 use LWP::UserAgent;
 use Plack::Middleware::OAuth::AccessToken;
+use Try::Tiny;
 use JSON::Any;
 use warnings;
 use strict;
@@ -42,33 +43,38 @@ sub get_access_token {
     # process response content...
 	my $response_content = $ua_response->content;
 	my $content_type     = $ua_response->header('Content-Type');
-	my $atkn;
+    my %params;
 
-	if( $content_type =~ m{json} || $content_type =~ m{javascript} || $response_content =~ m{^\{.*?\}}s ) {
-
-		my $params = JSON::Any->new->decode( $response_content );
-        $atkn = Plack::Middleware::OAuth::AccessToken->new(
-			version      => $config->{version},  # oauth version
-			provider     => $provider,
-			params       => {
-				%$params,
-				code => $code,
-			}
-        );
-
-	} else {
-		my $qq = URI::Query->new( $ua_response->content );
-		my %params = $qq->hash;
-        $atkn = Plack::Middleware::OAuth::AccessToken->new(
-			version      => $config->{version},  # oauth version
-			provider     => $provider,
-			params       => { 
-				%params,
-				code => $code
-			}
-		);
+    # we are pretty sure, the response is json format
+	if(    $content_type =~ m{json} 
+        || $content_type =~ m{javascript} 
+        || $response_content =~ m{^\{.*?\}\s*$}s ) 
+    {
+        try {
+            %params = %{ JSON::Any->new->decode( $response_content ) }; # should be hashref.
+        } catch {
+            # XXX: show exception page for this.
+            die "Can not decode json: " . $_;
+        };
+	} 
+    else {
+        try {
+            my $qq = URI::Query->new( $ua_response->content );
+            %params = $qq->hash;
+        } catch {
+            # XXX: show exception page for this.
+            die "Can not decode params: " . $_;
+        }
 	}
-    return $atkn;
+
+    return Plack::Middleware::OAuth::AccessToken->new(
+        version      => $config->{version},  # oauth version
+        provider     => $provider,
+        params       => {
+            %params,
+            code => $code,
+        }
+    );
 }
 
 sub run {
