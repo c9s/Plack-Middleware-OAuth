@@ -44,7 +44,7 @@ sub get_access_token {
 	my $content_type     = $ua_response->header('Content-Type');
 	my $atkn;
 
-	if( $content_type =~ m{json} || $content_type =~ m{javascript} || $config->{force_response_as_json} ) {
+	if( $content_type =~ m{json} || $content_type =~ m{javascript} || $response_content =~ m{^\{.*?\}}s ) {
 
 		my $params = JSON::Any->new->decode( $response_content );
         $atkn = Plack::Middleware::OAuth::AccessToken->new(
