@@ -16,7 +16,7 @@ sub query {
     my $body = $response->decoded_content;
     return unless $body;
     my $obj = decode_json( $body ) || {};
-    return $obj->{user};
+    return $obj;
 }
 
 1;
