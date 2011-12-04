@@ -77,6 +77,13 @@ For more details, please check the example psgi in `eg/` directory.
                         client_secret => '',
                         scope         => 'https://www.google.com/m8/feeds/'
                     },
+                    
+
+                    'Live' =>  { 
+                        client_id     => '',
+                        client_secret => '',
+                        scope         => 'wl.basic'
+                    },
 
                     'custom_provider' => { 
                         version => 1,
@@ -267,6 +274,7 @@ Custom provider:
 - Twitter
 - Facebook
 - GitHub
+- Live
 
 # See Also
 
@@ -300,6 +308,10 @@ Custom provider:
 [http://code.google.com/apis/accounts/docs/OAuth2.html](http://code.google.com/apis/accounts/docs/OAuth2.html)
 - Google OAuth Scope:
 [http://code.google.com/apis/gdata/faq.html#AuthScopes](http://code.google.com/apis/gdata/faq.html#AuthScopes)
+- Live OAuth
+[http://msdn.microsoft.com/en-us/library/hh243647.aspx](http://msdn.microsoft.com/en-us/library/hh243647.aspx)
+- Live OAuth Scope:
+[http://msdn.microsoft.com/en-us/library/hh243646.aspx](http://msdn.microsoft.com/en-us/library/hh243646.aspx)
 
 ## Contributors
 

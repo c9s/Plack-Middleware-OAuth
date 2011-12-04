@@ -80,6 +80,12 @@ SYNOPSIS
                             client_secret => '',
                             scope         => 'https://www.google.com/m8/feeds/'
                         },
+                    
+                        'Live' =>  { 
+                            client_id     => '',
+                            client_secret => '',
+                            scope         => 'wl.basic'
+                        },
 
                         'custom_provider' => { 
                             version => 1,
@@ -267,6 +273,8 @@ Supported Providers
 
     *   GitHub
 
+    *   Live
+
 See Also
     Net::OAuth, Net::OAuth2
 
@@ -304,6 +312,11 @@ Reference
     *   Google OAuth Scope:
         <http://code.google.com/apis/gdata/faq.html#AuthScopes>
 
+    *   Live OAuth <http://msdn.microsoft.com/en-us/library/hh243647.aspx>
+
+    *   Live OAuth Scope:
+        <http://msdn.microsoft.com/en-us/library/hh243646.aspx>
+
   Contributors
     RsrchBoy
 
@@ -311,9 +324,9 @@ POD ERRORS
     Hey! The above document had some coding errors, which are explained
     below:
 
-    Around line 427:
+    Around line 433:
         '=item' outside of any '=over'
 
-    Around line 453:
+    Around line 463:
         '=item' outside of any '=over'
 

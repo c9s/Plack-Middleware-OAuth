@@ -1,5 +1,9 @@
 Revision history for Plack-Middleware-OAuth
 
+
+0.10    日 12/ 4 15:45:10 2011
+        - Added Live.com OAuth from @fayland++
+
 0.091   六 10/15 14:03:02 2011
         - Fix inc/ bug.
 

@@ -27,6 +27,7 @@ lib/Plack/Middleware/OAuth/Facebook.pm
 lib/Plack/Middleware/OAuth/GenericHandler.pm
 lib/Plack/Middleware/OAuth/GitHub.pm
 lib/Plack/Middleware/OAuth/Google.pm
+lib/Plack/Middleware/OAuth/Live.pm
 lib/Plack/Middleware/OAuth/Handler.pm
 lib/Plack/Middleware/OAuth/Handler/AccessTokenV1.pm
 lib/Plack/Middleware/OAuth/Handler/AccessTokenV2.pm
@@ -38,6 +39,7 @@ lib/Plack/Middleware/OAuth/UserInfo/Facebook.pm
 lib/Plack/Middleware/OAuth/UserInfo/GitHub.pm
 lib/Plack/Middleware/OAuth/UserInfo/Google.pm
 lib/Plack/Middleware/OAuth/UserInfo/Twitter.pm
+lib/Plack/Middleware/OAuth/UserInfo/Live.pm
 t/00-load.t
 t/01-basic.t
 t/01-handler.t
