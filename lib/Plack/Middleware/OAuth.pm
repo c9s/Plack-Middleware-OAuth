@@ -239,6 +239,12 @@ For more details, please check the example psgi in F<eg/> directory.
                         client_secret => '',
                         scope         => 'https://www.google.com/m8/feeds/'
                     },
+                    
+                    'Live' =>  { 
+                        client_id     => '',
+                        client_secret => '',
+                        scope         => 'wl.basic'
+                    },
 
                     'custom_provider' => { 
                         version => 1,
@@ -440,6 +446,10 @@ Facebook
 
 GitHub
 
+=item
+
+Live
+
 =back
 
 =head1 See Also
@@ -514,6 +524,16 @@ L<http://code.google.com/apis/accounts/docs/OAuth2.html>
 
 Google OAuth Scope:
 L<http://code.google.com/apis/gdata/faq.html#AuthScopes>
+
+=item *
+
+Live OAuth
+L<http://msdn.microsoft.com/en-us/library/hh243647.aspx>
+
+=item *
+
+Live OAuth Scope:
+L<http://msdn.microsoft.com/en-us/library/hh243646.aspx>
 
 =back
 
