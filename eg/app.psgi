@@ -20,7 +20,7 @@ builder {
                     my $info = $userinfo->ask( $token->provider );
                     return $self->to_yaml( $info );
                 }
-                return $self->render( 'Error' );
+                return $self->render( 'Success, but no user info is retrieved.' );
             },
 
             # providers => 'eg/providers.yml',  # this also works

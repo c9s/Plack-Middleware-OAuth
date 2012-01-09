@@ -42,6 +42,9 @@ sub get_access_token {
 
     # process response content...
 	my $response_content = $ua_response->content;
+
+    # warn $response_content;
+
 	my $content_type     = $ua_response->header('Content-Type');
     my %params;
 
@@ -87,9 +90,14 @@ sub run {
 	my %args = $self->build_args($code); 
 	my $token = $self->get_access_token( $code , %args );
 
-    if( $token->has_error ) {
-		$self->on_error->( $self, $token ) if $self->on_error;
+    if ( $ENV{DEBUG} } {
+        use Data::Dumper;
+        warn 'Got token';
+        warn Dumper( $token );
     }
+
+    $self->on_error->( $self, $token ) 
+        if $token->has_error && $self->on_error;
 
 	unless( $token ) {
         return $self->on_error->( $self ) if $self->on_error;
