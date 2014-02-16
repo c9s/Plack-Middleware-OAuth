@@ -32,6 +32,8 @@ features 'Github Support' =>
     -default => 1,
     'Net::GitHub' => 0;
 
+repository 'https://github.com/c9s/Plack-Middleware-OAuth';
+
 # test_requires  'Test::More'  => '0.42';
 # recommends     'Text::CSV_XS'=> '0.50';
 # no_index       'directory'   => 'demos';
