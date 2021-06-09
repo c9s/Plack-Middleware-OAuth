@@ -25,6 +25,7 @@ sub run {
 		redirect_uri  => $config->{redirect_uri}  || $self->default_callback,
 		response_type => $config->{response_type} || 'code',
 		scope         => $config->{scope},
+		state         => $config->{state},
     );
 	$uri->query_form( %query );
 	return $self->redirect( $uri );
